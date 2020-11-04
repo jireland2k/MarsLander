@@ -80,12 +80,6 @@ def interpolate_surface(land, x):
     return m*(x - x1) + y1
 
 
-# x = 2000  # try varying x and testing if function works as expected
-# y = interpolate_surface(land, x)
-# plot_surface(land, landing_site)
-# plt.plot(x, y, 'bo')
-
-
 def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
@@ -108,6 +102,8 @@ def height(land, X):
 # for i in range(10):
 #     assert abs(height(_land, points[i, :]) -
 #                _height(_land, points[i, :])) < 1e-6
+
+
 g = 3.711  #  m/s^2, gravity on Mars
 
 
@@ -177,42 +173,40 @@ def simulate(X0, V0, land, landing_site,
     return Xs[:Nstep, :], Vs[:Nstep, :], thrust[:Nstep, :], success
 
 
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0.0, 0.0]
-# Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site)
-# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
-# m = 100.  # mass of lander in kg
-# dt = 0.1
-# # number of steps required for 1 second of simulated time
-# Nstep = int((1.0 / dt) + 1)
-# Xs, Vs, thrust, success = simulate(
-#     X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
+# PLOTTING ENERGY DRIFT
+m = 100.  # mass of lander in kg
+dt = 0.1
+# number of steps required for 1 second of simulated time
+Nstep = int((1.0 / dt) + 1)
+Xs, Vs, thrust, success = simulate(
+    X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
 
-# t = np.array([dt*i for i in range(Nstep)])
-# V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
-# T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
-# E = T + V
+t = np.array([dt*i for i in range(Nstep)])
+V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
+T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
+E = T + V
 
-# fig, ax = plt.subplots()
-# ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
-# ax.set_xlabel('Time / s')
-# ax.set_ylabel('Energy drift')
-# ax.legend()
-# assert t[0] == 0.0
-# assert t[-1] >= 1.0
-# assert len(t) == len(E) == Nstep
-# assert abs(E[-1] - E[0])/E[0] < 1e-3
+fig, ax = plt.subplots()
+ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
+ax.set_xlabel('Time / s')
+ax.set_ylabel('Energy drift')
+ax.legend()
+assert t[0] == 0.0
+assert t[-1] >= 1.0
+assert len(t) == len(E) == Nstep
+assert abs(E[-1] - E[0])/E[0] < 1e-3
 
 
 def dummy_autopilot(i, X, V, fuel, rotate, power):
     return (rotate, power)  # do nothing
 
 
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0.]
-# Xs, Vs, thrust, success = simulate(
-#     X0, V0, land, landing_site, dt=dt, autopilot=dummy_autopilot)
-# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+# STARTS DIRECTLY ABOVE LANDING SITE AND DOES NOTHING
+X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+V0 = [0., 0.]
+Xs, Vs, thrust, success = simulate(
+    X0, V0, land, landing_site, dt=dt, autopilot=dummy_autopilot)
+plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 
 def proportional_autopilot(i, X, V, fuel, rotate, power):
@@ -233,17 +227,23 @@ V0 = [0., 0.]
 Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                    autopilot=proportional_autopilot, fuel=np.inf)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
-# c = 30.
-# K_h = 0.01  # fill in your value of K_h here
 
-# h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
-# fig, ax = plt.subplots()
-# ax.plot(-h, Vs[:, 1], label="actual speed")
-# ax.set_xlabel("- altitude")
-# ax.set_ylabel("Vertical velocity")
-# ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
-# ax.legend()
+# PLOTTING TARGET SPEED AND ACTUAL SPEED
+c = 30.
+K_h = 0.01  # fill in your value of K_h here
+
+h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
+
+fig, ax = plt.subplots()
+ax.plot(-h, Vs[:, 1], label="actual speed")
+ax.set_xlabel("- altitude")
+ax.set_ylabel("Vertical velocity")
+ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
+ax.legend()
+
+
+# TEST TEMPLATES
 # # first test with infinite fuel
 # X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 # V0 = [0., 0., ]
@@ -256,6 +256,8 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 # Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
 #                                    autopilot=proportional_autopilot, fuel=200)
 # assert success
+
+
 # # Test 1. Random vertical starting positions
 # np.random.seed(123)  # seed random number generator for reproducible results
 # land, landing_site = mars_surface()
@@ -274,6 +276,8 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # print(f'count/trials = {count/trials}')
 # assert count/trials > 0.8  # require 80% success rate
+
+
 # # Test 2 - random initial vertical velocity
 
 # np.random.seed(123)  # seed random number generator for reproducible results
@@ -293,6 +297,8 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # print(f'count/trials = {count/trials}')
 # assert count/trials > 0.8  # require 80% success rate
+
+
 # # Test 3 - random Martian surfaces
 
 # np.random.seed(123)  # seed random number generator for reproducible results
