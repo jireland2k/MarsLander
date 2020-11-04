@@ -84,26 +84,6 @@ def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
 
-# #  height when on surface left edge should be close to zero
-# assert abs(height(land, [1, land[0, 1]])) < 100.0
-# # height when on surface at right edge should be close to zero
-# assert abs(height(land, [6999, land[-1, 1]])) < 100.0
-
-# _land, _landing_site = mars_surface()
-
-
-# def _height(_land, X):
-#     return X[1] - interpolate_surface(_land, X[0])
-
-
-# points = np.zeros((10, 2))
-# points[:, 0] = randint(0, 7000, size=10)
-# points[:, 1] = randint(0, 3000, size=10)
-# for i in range(10):
-#     assert abs(height(_land, points[i, :]) -
-#                _height(_land, points[i, :])) < 1e-6
-
-
 g = 3.711  #  m/s^2, gravity on Mars
 
 
@@ -176,6 +156,8 @@ def simulate(X0, V0, land, landing_site,
 # PLOTTING ENERGY DRIFT
 m = 100.  # mass of lander in kg
 dt = 0.1
+X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+V0 = [0., 0.]
 # number of steps required for 1 second of simulated time
 Nstep = int((1.0 / dt) + 1)
 Xs, Vs, thrust, success = simulate(
