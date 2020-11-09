@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pprint
+import itertools
 
 from numpy.random import randint
 from numpy.linalg import norm
@@ -118,7 +119,7 @@ def simulate(X0, V0, land, landing_site,
                                              np.cos(rotate_rad)])
             if fuel <= 0:
                 if not fuel_warning_printed:
-                    print("Fuel empty! Setting thrust to zero")
+                    #print("Fuel empty! Setting thrust to zero")
                     fuel_warning_printed = True
                 thrust[i, :] = 0
             else:
@@ -128,25 +129,30 @@ def simulate(X0, V0, land, landing_site,
         V += A * dt                          # update velocities
         X += V * dt                          # update positions
 
-        if i % print_interval == 0:
-            print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
-                  f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f}")
+        # if i % print_interval == 0:
+        # print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
+        # pass
+        # f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f}")
 
         # check for safe or crash landing
         if X[1] < interpolate_surface(land, X[0]):
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
-                print("crash! did jot land on flat ground!")
+                #print("crash! did jot land on flat ground!")
+                pass
             elif rotate != 0:
-                print(
-                    "crash! did not land in a vertical position (tilt angle = 0 degrees)")
+                # print(
+                    # "crash! did not land in a vertical position (tilt angle = 0 degrees)")
+                pass
             elif abs(V[1]) >= 40:
-                print(
-                    "crash! vertical speed must be limited (<40m/s in absolute value), got ", abs(V[1]))
+                # print(
+                    # "crash! vertical speed must be limited (<40m/s in absolute value), got ", abs(V[1]))
+                pass
             elif abs(V[0]) >= 20:
-                print(
-                    "crash! horizontal speed must be limited (<20m/s in absolute value), got ", abs(V[0]))
+                # print(
+                    # "crash! horizontal speed must be limited (<20m/s in absolute value), got ", abs(V[0]))
+                pass
             else:
-                print("safe landing - well done!")
+                #print("safe landing - well done!")
                 success = True
             Nstep = i
             break
@@ -234,22 +240,28 @@ def score(result):
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
 results = []
-parameters = {
-    'K_h': 0.001,
-    'K_p': 0.100
-}
-step = {
-    'K_h': 0.001,
-    'K_p': 0.050
-}
 
-for _ in range(100):
 
+K_hlist = list(np.arange(0.001, 1.001, 0.001))
+K_plist = list(np.arange(0.1, 1.1, 0.1))
+Trials = itertools.product(K_hlist, K_plist)
+
+for Trial in Trials:
+    parameters = {
+        'K_h': Trial[0],
+        'K_p': Trial[1]
+    }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-                      autopilot=proportional_autopilot, fuel=200, parameters=parameters)
-    results.append([parameters.copy(), score(result)])
-    for item in parameters.keys():
-        parameters[item] += step[item]
+                      autopilot=proportional_autopilot, fuel=np.inf, parameters=parameters)
+    results.append([parameters, score(result)])
+
+# for _ in range(100):
+
+#     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+#                       autopilot=proportional_autopilot, fuel=200, parameters=parameters)
+#     results.append([parameters.copy(), score(result)])
+#     for item in parameters.keys():
+#         parameters[item] += step[item]
 
 results = sorted(results, key=lambda x: x[1], reverse=True)
 
