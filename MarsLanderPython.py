@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pprint
 
 from numpy.random import randint
 from numpy.linalg import norm
@@ -89,7 +90,7 @@ g = 3.711  #  m/s^2, gravity on Mars
 
 def simulate(X0, V0, land, landing_site,
              fuel=200, dt=0.1, Nstep=1000,
-             autopilot=None, print_interval=100):
+             autopilot=None, print_interval=100, parameters=None):
 
     n = len(X0)       # number of degrees of freedom (2 here)
     X = X0.copy()     # current position
@@ -108,7 +109,7 @@ def simulate(X0, V0, land, landing_site,
 
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
-            rotate, power = autopilot(i, X, V, fuel, rotate, power)
+            rotate, power = autopilot(i, X, V, fuel, rotate, power, parameters)
             assert abs(rotate) <= 90
             assert 0 <= power <= 4
 
@@ -153,79 +154,116 @@ def simulate(X0, V0, land, landing_site,
     return Xs[:Nstep, :], Vs[:Nstep, :], thrust[:Nstep, :], success
 
 
-# PLOTTING ENERGY DRIFT
-m = 100.  # mass of lander in kg
-dt = 0.1
-X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0.]
-# number of steps required for 1 second of simulated time
-Nstep = int((1.0 / dt) + 1)
-Xs, Vs, thrust, success = simulate(
-    X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
+# # PLOTTING ENERGY DRIFT
+# m = 100.  # mass of lander in kg
+# dt = 0.1
+# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+# V0 = [0., 0.]
+# # number of steps required for 1 second of simulated time
+# Nstep = int((1.0 / dt) + 1)
+# Xs, Vs, thrust, success = simulate(
+#     X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
 
-t = np.array([dt*i for i in range(Nstep)])
-V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
-T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
-E = T + V
+# t = np.array([dt*i for i in range(Nstep)])
+# V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
+# T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
+# E = T + V
 
-fig, ax = plt.subplots()
-ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
-ax.set_xlabel('Time / s')
-ax.set_ylabel('Energy drift')
-ax.legend()
-assert t[0] == 0.0
-assert t[-1] >= 1.0
-assert len(t) == len(E) == Nstep
-assert abs(E[-1] - E[0])/E[0] < 1e-3
-
-
-def dummy_autopilot(i, X, V, fuel, rotate, power):
-    return (rotate, power)  # do nothing
+# fig, ax = plt.subplots()
+# ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
+# ax.set_xlabel('Time / s')
+# ax.set_ylabel('Energy drift')
+# ax.legend()
+# assert t[0] == 0.0
+# assert t[-1] >= 1.0
+# assert len(t) == len(E) == Nstep
+# assert abs(E[-1] - E[0])/E[0] < 1e-3
 
 
-# STARTS DIRECTLY ABOVE LANDING SITE AND DOES NOTHING
-X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0.]
-Xs, Vs, thrust, success = simulate(
-    X0, V0, land, landing_site, dt=dt, autopilot=dummy_autopilot)
-plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+# def dummy_autopilot(i, X, V, fuel, rotate, power, parameters):
+#     return (rotate, power)  # do nothing
 
 
-def proportional_autopilot(i, X, V, fuel, rotate, power):
-    c = 10.0  # target landing speed, m/s
-    K_h = 0.01
-    K_p = 0.2
+# # STARTS DIRECTLY ABOVE LANDING SITE AND DOES NOTHING
+# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+# V0 = [0., 0.]
+# Xs, Vs, thrust, success = simulate(
+#     X0, V0, land, landing_site, dt=dt, autopilot=dummy_autopilot)
+# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+
+
+def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
+    c = 0.0  # target landing speed, m/s
+    K_h = parameters['K_h']
+    K_p = parameters['K_p']
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     Pout = K_p*e
     power = min(max(Pout, 0.0), 4.0)
-    if i % 100 == 0:
-        print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    # if i % 100 == 0:
+    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
 
 
+# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+# V0 = [0., 0.]
+# Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+#                                    autopilot=proportional_autopilot, fuel=np.inf)
+# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+
+
+# # PLOTTING TARGET SPEED AND ACTUAL SPEED
+# c = 10.0
+# K_h = 0.01  # fill in your value of K_h here
+
+# h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
+
+# fig, ax = plt.subplots()
+# ax.plot(-h, Vs[:, 1], label="actual speed")
+# ax.set_xlabel("- altitude")
+# ax.set_ylabel("Vertical velocity")
+# ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
+# ax.legend()
+
+# Automated Testing (Proportional, Unexpanded Variables, 200kg fuel)
+def score(result):
+    Xs, Vs, thrust, success = result
+    return Vs[-1][1]
+
+
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0.]
-Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-                                   autopilot=proportional_autopilot, fuel=np.inf)
-plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+V0 = [0., 0., ]
+results = []
+parameters = {
+    'K_h': 0.001,
+    'K_p': 0.100
+}
+step = {
+    'K_h': 0.001,
+    'K_p': 0.050
+}
 
+for _ in range(100):
 
-# PLOTTING TARGET SPEED AND ACTUAL SPEED
-c = 30.
-K_h = 0.01  # fill in your value of K_h here
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+                      autopilot=proportional_autopilot, fuel=200, parameters=parameters)
+    results.append([parameters.copy(), score(result)])
+    for item in parameters.keys():
+        parameters[item] += step[item]
 
-h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
+results = sorted(results, key=lambda x: x[1], reverse=True)
 
-fig, ax = plt.subplots()
-ax.plot(-h, Vs[:, 1], label="actual speed")
-ax.set_xlabel("- altitude")
-ax.set_ylabel("Vertical velocity")
-ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
-ax.legend()
+pprint.pprint(results[:5])
+
+# #Cartesian product(with several iterables):
+# print list(itertools.product([1, 2, 3], [4, 5, 6]))
+# [(1, 4), (1, 5), (1, 6),
+#  (2, 4), (2, 5), (2, 6),
+#  (3, 4), (3, 5), (3, 6)]
 
 
 # TEST TEMPLATES
+
 # # first test with infinite fuel
 # X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 # V0 = [0., 0., ]
