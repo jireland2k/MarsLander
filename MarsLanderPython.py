@@ -231,6 +231,7 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 # ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
 # ax.legend()
 
+
 # Automated Testing (Proportional, Unexpanded Variables, 200kg fuel)
 def score(result):
     Xs, Vs, thrust, success = result
@@ -242,7 +243,7 @@ V0 = [0., 0., ]
 results = []
 
 
-K_hlist = list(np.arange(0.001, 1.001, 0.001))
+K_hlist = list(np.arange(0.001, 1.001, 0.005))
 K_plist = list(np.arange(0.1, 1.1, 0.1))
 Trials = itertools.product(K_hlist, K_plist)
 
@@ -255,17 +256,30 @@ for Trial in Trials:
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     results.append([parameters, score(result)])
 
-# for _ in range(100):
-
-#     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-#                       autopilot=proportional_autopilot, fuel=200, parameters=parameters)
-#     results.append([parameters.copy(), score(result)])
-#     for item in parameters.keys():
-#         parameters[item] += step[item]
-
 results = sorted(results, key=lambda x: x[1], reverse=True)
 
 pprint.pprint(results[:5])
+
+
+# Best Proportional Autopilot test:
+def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
+    c = 0.0  # target landing speed, m/s
+    K_h = 0.016  # insert top result from the simulate function above
+    K_p = 1.0  # insert top result from the simulate function above
+    h = height(land, X)
+    e = - (c + K_h*h + V[1])
+    Pout = K_p*e
+    power = min(max(Pout, 0.0), 4.0)
+    # if i % 100 == 0:
+    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    return (rotate, power)
+
+
+X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+V0 = [0., 0.]
+Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                   autopilot=best_proportional_autopilot, fuel=500)
+plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # #Cartesian product(with several iterables):
 # print list(itertools.product([1, 2, 3], [4, 5, 6]))
