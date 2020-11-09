@@ -252,7 +252,7 @@ for Trial in Trials:
         'K_p': Trial[1]
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-                      autopilot=proportional_autopilot, fuel=np.inf, parameters=parameters)
+                      autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     results.append([parameters, score(result)])
 
 # for _ in range(100):
