@@ -144,22 +144,22 @@ def simulate(X0, V0, land, landing_site,
         # check for safe or crash landing
         if X[1] < interpolate_surface(land, X[0]):
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
-                print("crash! did jot land on flat ground!")
+                print("Crash! did not land on flat ground!")
                 pass
-            elif rotate != 0:
+            elif abs(rotate) > 0.045:  # radians
                 print(
-                    "crash! did not land in a vertical position (tilt angle = 0 degrees)")
+                    "Crash! did not land in a vertical position (tilt angle = 0 degrees)")
                 pass
-            elif abs(V[1]) >= 40:
+            elif abs(V[1]) >= 5:
                 print(
-                    "crash! vertical speed must be limited (<40m/s in absolute value), got ", abs(V[1]))
+                    "Crash! vertical speed must be limited (<5m/s in absolute value), got ", abs(V[1]))
                 pass
-            elif abs(V[0]) >= 20:
+            elif abs(V[0]) >= 1:
                 print(
-                    "crash! horizontal speed must be limited (<20m/s in absolute value), got ", abs(V[0]))
+                    "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
                 pass
             else:
-                print("safe landing - well done!")
+                print("Safe landing - Well done!")
                 success = True
             Nstep = i
             break
