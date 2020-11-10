@@ -11,6 +11,9 @@ from ipywidgets import interactive
 from matplotlib import rcParams
 rcParams['figure.figsize'] = (10, 8)
 
+g = 3.711  #  m/s^2, gravity on Mars
+power2thrust = 500
+
 
 def mars_surface():
     surfaceN = randint(5, 15)
@@ -59,8 +62,9 @@ def plot_lander(land, landing_site, X, thrust=None, animate=False, step=10):
             ax.plot(X[:n, 0], X[:n, 1], 'b--')
             ax.plot(X[n, 0], X[n, 1], 'b^', ms=20)
             if thrust is not None:
-                ax.plot([X[n, 0], X[n, 0] - 100*thrust[n, 0]],
-                        [X[n, 1] - 100., X[n, 1] - 100. - 100*thrust[n, 1]],
+                ax.plot([X[n, 0], X[n, 0] - 100/power2thrust*thrust[n, 0]],
+                        [X[n, 1] - 100., X[n, 1] - 100. -
+                            100/power2thrust*thrust[n, 1]],
                         'r-', lw=10)
         return interactive(plot_frame, n=(0, len(X), step))
     else:
@@ -86,9 +90,6 @@ def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
 
-g = 3.711  #  m/s^2, gravity on Mars
-
-
 def simulate(X0, V0, land, landing_site,
              fuel=200, dt=0.1, Nstep=1000,
              autopilot=None, print_interval=100, parameters=None):
@@ -98,15 +99,18 @@ def simulate(X0, V0, land, landing_site,
     V = V0.copy()     # current velocity
     Xs = np.zeros((Nstep, n))  # position history (trajectory)
     Vs = np.zeros((Nstep, n))  # velocity history
+    fuels = np.zeros(Nstep)
     thrust = np.zeros((Nstep, n))  # thrust history
     success = False
     fuel_warning_printed = False
     rotate = 0  #  degrees, initial angle
     power = 0            # m/s^2, initial thrust power
+    mass = 500
 
     for i in range(Nstep):
         Xs[i, :] = X     # Store positions
         Vs[i, :] = V     # Store velocities
+        fuels[i] = fuel  # store fuel
 
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
@@ -115,49 +119,53 @@ def simulate(X0, V0, land, landing_site,
             assert 0 <= power <= 4
 
             rotate_rad = rotate * np.pi / 180.0  # degrees to radians
-            thrust[i, :] = power * np.array([np.sin(rotate_rad),
-                                             np.cos(rotate_rad)])
+            thrust[i, :] = power2thrust * power * np.array([np.sin(rotate_rad),
+                                                            np.cos(rotate_rad)])
             if fuel <= 0:
                 if not fuel_warning_printed:
                     #print("Fuel empty! Setting thrust to zero")
                     fuel_warning_printed = True
                 thrust[i, :] = 0
+                fuel = 0
             else:
-                fuel -= power*dt
+                fuel -= power * dt
+                mass -= power * dt
 
-        A = np.array([0, -g]) + thrust[i, :]  # acceleration
-        V += A * dt                          # update velocities
-        X += V * dt                          # update positions
+# force to acceleration
 
-        # if i % print_interval == 0:
-        # print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
-        # pass
-        # f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f}")
+        A = np.array([0, -g]) + thrust[i, :] / mass  # acceleration
+        V += A * dt                                  # update velocities
+        X += V * dt                                  # update positions
+
+        if i % print_interval == 0:
+            print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
+                  f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f} mass={mass:8.3f}")
 
         # check for safe or crash landing
         if X[1] < interpolate_surface(land, X[0]):
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
-                #print("crash! did jot land on flat ground!")
+                print("crash! did jot land on flat ground!")
                 pass
             elif rotate != 0:
-                # print(
-                    # "crash! did not land in a vertical position (tilt angle = 0 degrees)")
+                print(
+                    "crash! did not land in a vertical position (tilt angle = 0 degrees)")
                 pass
             elif abs(V[1]) >= 40:
-                # print(
-                    # "crash! vertical speed must be limited (<40m/s in absolute value), got ", abs(V[1]))
+                print(
+                    "crash! vertical speed must be limited (<40m/s in absolute value), got ", abs(V[1]))
                 pass
             elif abs(V[0]) >= 20:
-                # print(
-                    # "crash! horizontal speed must be limited (<20m/s in absolute value), got ", abs(V[0]))
+                print(
+                    "crash! horizontal speed must be limited (<20m/s in absolute value), got ", abs(V[0]))
                 pass
             else:
-                #print("safe landing - well done!")
+                print("safe landing - well done!")
                 success = True
             Nstep = i
             break
 
-    return Xs[:Nstep, :], Vs[:Nstep, :], thrust[:Nstep, :], success
+    return (Xs[:Nstep, :], Vs[:Nstep, :],
+            thrust[:Nstep, :], fuels[:Nstep], success)
 
 
 # # PLOTTING ENERGY DRIFT
@@ -234,8 +242,9 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 
 # Automated Testing (Proportional, Unexpanded Variables, 200kg fuel)
 def score(result):
-    Xs, Vs, thrust, success = result
-    return Vs[-1][1]
+    Xs, Vs, thrust, fuels, success = result
+    unit_conversion = 1.0
+    return np.sqrt(Vs[-1][1]**2 + unit_conversion * fuels[-1]**2)
 
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
@@ -243,23 +252,27 @@ V0 = [0., 0., ]
 results = []
 
 
-K_hlist = list(np.arange(0.001, 1.001, 0.005))
-K_plist = list(np.arange(0.1, 1.1, 0.1))
-Trials = itertools.product(K_hlist, K_plist)
+# K_hlist = list(np.arange(0.001, 1.001, 0.005))
+# K_plist = list(np.arange(0.1, 2.1, 0.1))
+# Trials = itertools.product(K_hlist, K_plist)
 
-for Trial in Trials:
-    parameters = {
-        'K_h': Trial[0],
-        'K_p': Trial[1]
-    }
-    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-                      autopilot=proportional_autopilot, fuel=500, parameters=parameters)
-    results.append([parameters, score(result)])
+# for Trial in Trials:
+#     parameters = {
+#         'K_h': Trial[0],
+#         'K_p': Trial[1]
+#     }
+#     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+#                       autopilot=proportional_autopilot, fuel=200, parameters=parameters)
+#     results.append([parameters, score(result)])
 
-results = sorted(results, key=lambda x: x[1], reverse=True)
+# results = sorted(results, key=lambda x: x[1], reverse=True)
 
-pprint.pprint(results[:5])
+# pprint.pprint(results[:5])
 
+#
+# argmin for retrieving coefficients
+# scipy.minimize for more efficient search
+#
 
 # Best Proportional Autopilot test:
 def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
@@ -277,8 +290,8 @@ def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0.]
-Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-                                   autopilot=best_proportional_autopilot, fuel=500)
+Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                          autopilot=best_proportional_autopilot, fuel=200)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # #Cartesian product(with several iterables):
