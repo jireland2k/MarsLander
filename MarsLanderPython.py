@@ -146,15 +146,15 @@ def simulate(X0, V0, land, landing_site,
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
                 print("Crash! did not land on flat ground!")
                 pass
-            elif abs(rotate) > 0.045:  # radians
+            elif abs(rotate) > 0.087:  # radians
                 print(
-                    "Crash! did not land in a vertical position (tilt angle = 0 degrees)")
+                    "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
                 pass
             elif abs(V[1]) >= 5:
                 print(
                     "Crash! vertical speed must be limited (<5m/s in absolute value), got ", abs(V[1]))
                 pass
-            elif abs(V[0]) >= 1:
+            elif abs(V[0]) >= 2:
                 print(
                     "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
                 pass
