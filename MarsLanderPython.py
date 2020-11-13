@@ -132,8 +132,13 @@ def simulate(X0, V0, land, landing_site,
                 mass -= power * dt
 
 # force to acceleration
-
-        A = np.array([0, -g]) + thrust[i, :] / mass  # acceleration
+        Cd = 1.17  # equate to hemisphere with flat side pointed in velocity direction
+        atmos_density = 0.020  # in kg/m ^ 3
+        lander_area = 4.0  # in m^2
+        # D = Drag force: drag coefficient * ((atmospheric density * velocity^2)/2) * lander area
+        Dh = - Cd*((atmos_density * (V[0]*np.abs(V[0])))/2)*lander_area/mass
+        Dv = - Cd*((atmos_density * (V[1]*np.abs(V[1])))/2)*lander_area/mass
+        A = np.array([0+Dh, -g+Dv]) + thrust[i, :] / mass  # acceleration
         V += A * dt                                  # update velocities
         X += V * dt                                  # update positions
 
