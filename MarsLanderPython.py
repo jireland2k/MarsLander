@@ -14,7 +14,7 @@ from matplotlib import rcParams
 rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
-power2thrust = 500
+power2thrust = 1000
 
 
 def mars_surface():
@@ -144,29 +144,29 @@ def simulate(X0, V0, land, landing_site,
         V += A * dt                                  # update velocities
         X += V * dt                                  # update positions
 
-        if i % print_interval == 0:
-            print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
-                  f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f} mass={mass:8.3f}")
+        # if i % print_interval == 0:
+        #     print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
+        #           f" thrust=[{thrust[i, 0]:8.3f} {thrust[i, 1]:8.3f}] fuel={fuel:8.3f} mass={mass:8.3f}")
 
         # check for safe or crash landing
         if X[1] < interpolate_surface(land, X[0]):
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
-                print("Crash! did not land on flat ground!")
+                # print("Crash! did not land on flat ground!")
                 pass
             elif abs(rotate) > 0.087:  # radians
-                print(
-                    "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
+                # print(
+                #     "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
                 pass
             elif abs(V[1]) >= 5:
-                print(
-                    "Crash! vertical speed must be limited (<5m/s in absolute value), got ", abs(V[1]))
+                # print(
+                #     "Crash! vertical speed must be limited (<5m/s in absolute value), got ", abs(V[1]))
                 pass
             elif abs(V[0]) >= 2:
-                print(
-                    "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
+                # print(
+                #     "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
                 pass
             else:
-                print("Safe landing - Well done!")
+                # print("Safe landing - Well done!")
                 success = True
             Nstep = i
             break
@@ -247,7 +247,7 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 # ax.legend()
 
 
-# Automated Testing (Proportional, Unexpanded Variables, 200kg fuel)
+# Automated Testing (Proportional)
 def score(result):
     Xs, Vs, thrust, fuels, success = result
     unit_conversion = 1.0
@@ -270,12 +270,13 @@ for Trial in Trials:
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
+    # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
 
 results = sorted(results, key=lambda x: x[1], reverse=True)
 
 
-with open('Trial results.csv', 'w', newline='') as csvfile:
+with open('Trial Results.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
