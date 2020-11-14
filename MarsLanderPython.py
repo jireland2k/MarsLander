@@ -294,7 +294,7 @@ def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0.]
+V0 = [0., np.random.uniform(-10, -20)]
 Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                           autopilot=best_proportional_autopilot, fuel=200)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
