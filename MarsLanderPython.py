@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pprint
 import itertools
+import csv
+import json
 
 from numpy.random import randint
 from numpy.linalg import norm
@@ -105,7 +107,7 @@ def simulate(X0, V0, land, landing_site,
     fuel_warning_printed = False
     rotate = 0  #  degrees, initial angle
     power = 0            # m/s^2, initial thrust power
-    mass = 500
+    mass = 1000
 
     for i in range(Nstep):
         Xs[i, :] = X     # Store positions
@@ -257,22 +259,28 @@ V0 = [0., 0., ]
 results = []
 
 
-# K_hlist = list(np.arange(0.001, 1.001, 0.005))
-# K_plist = list(np.arange(0.1, 2.1, 0.1))
-# Trials = itertools.product(K_hlist, K_plist)
+K_hlist = list(np.arange(0.001, 1.001, 0.005))
+K_plist = list(np.arange(0.1, 2.1, 0.1))
+Trials = itertools.product(K_hlist, K_plist)
 
-# for Trial in Trials:
-#     parameters = {
-#         'K_h': Trial[0],
-#         'K_p': Trial[1]
-#     }
-#     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-#                       autopilot=proportional_autopilot, fuel=200, parameters=parameters)
-#     results.append([parameters, score(result)])
+for Trial in Trials:
+    parameters = {
+        'K_h': Trial[0],
+        'K_p': Trial[1]
+    }
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+                      autopilot=proportional_autopilot, fuel=500, parameters=parameters)
+    results.append([parameters, score(result)])
 
-# results = sorted(results, key=lambda x: x[1], reverse=True)
+results = sorted(results, key=lambda x: x[1], reverse=True)
 
-# pprint.pprint(results[:5])
+
+with open('Trial results.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in results:
+        writer.writerow([json.dumps(row[0]), str(row[1])])
+
+pprint.pprint(results[:5])
 
 #
 # argmin for retrieving coefficients
@@ -280,6 +288,8 @@ results = []
 #
 
 # Best Proportional Autopilot test:
+
+
 def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = 0.016  # insert top result from the simulate function above
@@ -296,7 +306,7 @@ def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., np.random.uniform(-10, -20)]
 Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-                                          autopilot=best_proportional_autopilot, fuel=200)
+                                          autopilot=best_proportional_autopilot, fuel=500)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # #Cartesian product(with several iterables):
