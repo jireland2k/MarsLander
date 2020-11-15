@@ -227,16 +227,38 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
     return (rotate, power)
 
 
-def proportional_integral_autopilot(i, X, V, fuel, rotate, power, parameters):
+def pi_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
-    K_i = parameters['K_h']
+    K_i = parameters['K_i']
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     integral_e = 0
     integral_e += e * dt
     Pout = K_p*e + K_i*integral_e
+    power = min(max(Pout, 0.0), 4.0)
+    # if i % 100 == 0:
+    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    return (rotate, power)
+
+
+def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
+    c = 0.0  # target landing speed, m/s
+    e = 0
+    e_last = 0
+    K_h = parameters['K_h']
+    K_p = parameters['K_p']
+    K_i = parameters['K_i']
+    K_d = parameters['K_d']
+    h = height(land, X)
+    e = - (c + K_h*h + V[1])
+    integral_e = 0
+    integral_e += e * dt
+    diff_e = 0
+    diff_e = (e - e_last) / dt
+    e_last = e
+    Pout = K_p*e + K_i*integral_e + K_d*diff_e
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
     #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
