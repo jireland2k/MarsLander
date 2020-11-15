@@ -15,6 +15,7 @@ rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
 power2thrust = 1000
+dt = 0.1
 
 
 def mars_surface():
@@ -220,6 +221,22 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     Pout = K_p*e
+    power = min(max(Pout, 0.0), 4.0)
+    # if i % 100 == 0:
+    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    return (rotate, power)
+
+
+def proportional_integral_autopilot(i, X, V, fuel, rotate, power, parameters):
+    c = 0.0  # target landing speed, m/s
+    K_h = parameters['K_h']
+    K_p = parameters['K_p']
+    K_i = parameters['K_h']
+    h = height(land, X)
+    e = - (c + K_h*h + V[1])
+    integral_e = 0
+    integral_e += e * dt
+    Pout = K_p*e + K_i*integral_e
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
     #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
