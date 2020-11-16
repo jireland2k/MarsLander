@@ -422,14 +422,24 @@ K_i = 2
 K_d = 1.2
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
-fig, ax = plt.subplots()
-ax.plot(-h, Vs[:, 1], label="Actual speed")
-ax.plot(-h, As[:, 1], label="Acceleration experienced")
-ax.set_xlabel("- Altitude")
-ax.set_ylabel("Vertical velocity")
-ax.plot(-h, -(c + K_h*h), label=f"Target speed K$_h$={K_h}")
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
+Actual_velocity = ax.plot(-h, Vs[:, 1], 'b-', label="Actual velocity (m/s)")
+Target_velocity = ax.plot(-h, -(c + K_h*h), 'g-',
+                          label=f"Target velocity K$_h$={K_h}")
+ax2 = ax.twinx()
+Accel_exp = ax2.plot(-h, As[:, 1], 'r-',
+                     label="Acceleration experienced (m/s^2)")
+
+lines = Actual_velocity+Target_velocity+Accel_exp
+labs = [l.get_label() for l in lines]
+ax.legend(lines, labs, loc=0)
+ax.set_xlabel("-Altitude (m)")
+ax.set_ylabel("Vertical velocity (m/s)")
+ax2.set_ylabel("Vertical acceleration (m/s^2)")
+ax2.set_ylim(-5, +5)
 ax.grid(True)
-ax.legend()
 
 
 # # PLOTTING ENERGY DRIFT
