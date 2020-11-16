@@ -277,9 +277,10 @@ for Trial in Trials:
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    Xs, Vs, As, thrust, fuels, success = result
     # results 2 is pretty printing
     resultsP.append(["K_h", Trial[0], "K_p",
-                     Trial[1], "Score", score(result)])
+                     Trial[1], "Score", score(result), "Fuel remaining", fuels[-1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsP = sorted(resultsP, key=lambda x: x[5])
@@ -296,8 +297,10 @@ for i in top_fiveP:
     i[1] = '{:.3f}'.format(round(i[1], 3))
     i[3] = '{:.3f}'.format(round(i[3], 3))
     i[5] = '{:.3f}'.format(round(i[5], 3))
+    i[7] = '{:.3f}'.format(round(i[7], 3))
 
-pprint.pprint(top_fiveP)
+pp = pprint.PrettyPrinter(width=120)
+pp.pprint(top_fiveP)
 print()
 
 trial_time = time.clock() - start_time
@@ -327,8 +330,9 @@ for Trial in Trials:
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    Xs, Vs, As, thrust, fuels, success = result
     resultsPI.append(["K_h", Trial[0], "K_p",
-                      Trial[1], "K_i", Trial[2], "Score", score(result)])
+                      Trial[1], "K_i", Trial[2], "Score", score(result), "Fuel remaining", fuels[-1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
@@ -347,8 +351,10 @@ for i in top_fivePI:
     i[3] = '{:.3f}'.format(round(i[3], 3))
     i[5] = '{:.3f}'.format(round(i[5], 3))
     i[7] = '{:.3f}'.format(round(i[7], 3))
+    i[9] = '{:.3f}'.format(round(i[9], 3))
 
-pprint.pprint(top_fivePI)
+pp = pprint.PrettyPrinter(width=120)
+pp.pprint(top_fivePI)
 print()
 
 trial_time = time.clock() - start_time
@@ -379,8 +385,9 @@ for Trial in Trials:
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    Xs, Vs, As, thrust, fuels, success = result
     resultsPID.append(["K_h", Trial[0], "K_p",
-                       Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result)])
+                       Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result), "Fuel remaining", fuels[-1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
@@ -400,8 +407,9 @@ for i in top_fivePID:
     i[5] = '{:.3f}'.format(round(i[5], 3))
     i[7] = '{:.3f}'.format(round(i[7], 3))
     i[9] = '{:.3f}'.format(round(i[9], 3))
+    i[11] = '{:.3f}'.format(round(i[11], 3))
 
-pp = pprint.PrettyPrinter(width=100)
+pp = pprint.PrettyPrinter(width=120)
 pp.pprint(top_fivePID)
 print()
 trial_time = time.clock() - start_time
