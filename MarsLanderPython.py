@@ -138,7 +138,7 @@ def simulate(X0, V0, land, landing_site,
 
 # force to acceleration
 # TODO: Showcase implementation of drag
-        Cd = 1.17  # equate to hemisphere with flat side pointed in velocity direction
+        Cd = 1.17  # assume drag coefficient of hemisphere with flat side pointed in velocity direction
         atmos_density = 0.020  # in kg/m ^ 3
         lander_area = 4.0  # in m^2
         # D = Drag force: drag coefficient * ((atmospheric density * velocity^2)/2) * lander area
@@ -244,7 +244,8 @@ V0 = [0., 0., ]
 results = []
 
 # TODO: Arange gives weird floats not nice for formatting, fix
-K_hlist = list(np.linspace(0.000, 2.000, 11))
+# first number on linspace must not be 0 otherwise is not height dependent (hovers)
+K_hlist = list(np.linspace(0.001, 0.050, 8))
 K_plist = list(np.linspace(0.000, 2.000, 6))
 K_ilist = list(np.linspace(0.000, 2.000, 6))
 K_dlist = list(np.linspace(0.000, 2.000, 6))
@@ -271,7 +272,6 @@ for Trial in Trials:
     results.append([parameters, score(result)])
 
 results = sorted(results, key=lambda x: x[1])
-
 
 with open('Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
@@ -383,10 +383,10 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     e = 0
     e_last = 0
-    K_h = 0.01
-    K_p = 0.2
-    K_i = 0.2
-    K_d = 0.2
+    K_h = 0.029
+    K_p = 2
+    K_i = 2
+    K_d = 1.2
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     integral_e = 0
@@ -411,10 +411,10 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # PLOTTING TARGET SPEED AND ACTUAL SPEED
 c = 0.0
-K_h = 0.01  # fill in your value of K_h here
-K_p = 0.2
-K_i = 0.2
-K_d = 0.2
+K_h = 0.029  # fill in your value of K_h here
+K_p = 2
+K_i = 2
+K_d = 1.2
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig, ax = plt.subplots()
