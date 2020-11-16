@@ -290,6 +290,11 @@ with open('Trial Results P.csv', 'w', newline='') as csvfile:
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
+with open('Trial Results Praw.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in resultsP:
+        writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7])])
+
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
 print()
 top_fiveP = resultsP[:5]
@@ -342,6 +347,12 @@ with open('Trial Results PI.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
+
+with open('Trial Results PIraw.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in resultsPI:
+        writer.writerow([str(row[1]), str(row[3]), str(
+            row[5]), str(row[7]), str(row[9])])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -398,6 +409,12 @@ with open('Trial Results PID.csv', 'w', newline='') as csvfile:
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
+with open('Trial Results PIDraw.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in resultsPID:
+        writer.writerow([str(row[1]), str(row[3]), str(
+            row[5]), str(row[7]), str(row[9]), str(row[11])])
+
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
 top_fivePID = resultsPID[:5]
@@ -431,9 +448,9 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
     e = 0
     e_last = 0
     K_h = 0.029
-    K_p = 2
-    K_i = 2
-    K_d = 1.2
+    K_p = 1.6
+    K_i = 0.4
+    K_d = 0
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     integral_e = 0
@@ -459,9 +476,9 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 # PLOTTING TARGET SPEED AND ACTUAL SPEED
 c = 0.0
 K_h = 0.029  # fill in your value of K_h here
-K_p = 2
-K_i = 2
-K_d = 1.2
+K_p = 1.6
+K_i = 0.4
+K_d = 0
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig = plt.figure()
