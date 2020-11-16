@@ -238,8 +238,8 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
 # Automated Testing
 def score(result):
     Xs, Vs, As, thrust, fuels, success = result
-    unit_conversion = 1.0
-    return np.sqrt(Vs[-1][1]**2)  # + unit_conversion * fuels[-1]**2)
+    fuel_use_bias = 0.00
+    return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
@@ -442,15 +442,18 @@ print("Testing complete!")
 
 # Best Autopilot test:
 
+with open('Trial Results PIDraw.csv') as csvDataFile:
+    data = list(csv.reader(csvDataFile))
+
 
 def best_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     e = 0
     e_last = 0
-    K_h = 0.029
-    K_p = 1.6
-    K_i = 0.4
-    K_d = 0
+    K_h = float(data[0][0])
+    K_p = float(data[0][1])
+    K_i = float(data[0][2])
+    K_d = float(data[0][3])
     h = height(land, X)
     e = - (c + K_h*h + V[1])
     integral_e = 0
@@ -475,10 +478,10 @@ plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # PLOTTING TARGET SPEED AND ACTUAL SPEED
 c = 0.0
-K_h = 0.029  # fill in your value of K_h here
-K_p = 1.6
-K_i = 0.4
-K_d = 0
+K_h = float(data[0][0])
+K_p = float(data[0][1])
+K_i = float(data[0][2])
+K_d = float(data[0][3])
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig = plt.figure()
