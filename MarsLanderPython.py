@@ -4,6 +4,7 @@ import pprint
 import itertools
 import csv
 import json
+import time
 
 from numpy.random import randint
 from numpy.linalg import norm
@@ -126,7 +127,7 @@ def simulate(X0, V0, land, landing_site,
                                                             np.cos(rotate_rad)])
             if fuel <= 0:
                 if not fuel_warning_printed:
-                    #print("Fuel empty! Setting thrust to zero")
+                    # print("Fuel empty! Setting thrust to zero")
                     fuel_warning_printed = True
                 thrust[i, :] = 0
                 fuel = 0
@@ -223,7 +224,7 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
     Pout = K_p*e
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
-    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
 
 
@@ -239,7 +240,7 @@ def pi_autopilot(i, X, V, fuel, rotate, power, parameters):
     Pout = K_p*e + K_i*integral_e
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
-    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
 
 
@@ -261,7 +262,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
     Pout = K_p*e + K_i*integral_e + K_d*diff_e
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
-    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
 
 
@@ -286,7 +287,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
 # ax.legend()
 
 
-# Automated Testing (Proportional)
+# Automated Testing
 def score(result):
     Xs, Vs, thrust, fuels, success = result
     unit_conversion = 1.0
@@ -298,8 +299,20 @@ V0 = [0., 0., ]
 results = []
 
 
-K_hlist = list(np.arange(0.001, 1.001, 0.005))
-K_plist = list(np.arange(0.1, 2.1, 0.1))
+K_hlist = list(np.arange(0.001, 1.001, 0.100))
+K_plist = list(np.arange(0.1, 2.1, 0.2))
+K_ilist = list(np.arange(0.1, 2.1, 0.2))
+K_dlist = list(np.arange(0.1, 2.1, 0.2))
+
+
+# Automated Testing (P Vertical)
+print("Initialising proportional autopilot testing:")
+print()
+
+start_time = time.clock()
+
+Trial_combinations = np.size(K_hlist) * np.size(K_plist)
+
 Trials = itertools.product(K_hlist, K_plist)
 
 for Trial in Trials:
@@ -315,12 +328,100 @@ for Trial in Trials:
 results = sorted(results, key=lambda x: x[1], reverse=True)
 
 
-with open('Trial Results.csv', 'w', newline='') as csvfile:
+with open('Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
+print("The top 5 tuning combinations tested for the proportional autopilot are:")
 pprint.pprint(results[:5])
+print()
+
+trial_time = time.clock() - start_time
+print("It took " + str(trial_time) + " seconds to test " +
+      str(Trial_combinations) + " Proportional autopilot trials.")
+print("\n")
+
+
+# Automated Testing (PI Vertical)
+print("Initialising proportional-integral autopilot testing:")
+print()
+
+start_time = time.clock()
+
+Trial_combinations = np.size(
+    K_hlist) * np.size(K_plist) * np.size(K_ilist)
+
+Trials = itertools.product(K_hlist, K_plist, K_ilist)
+
+for Trial in Trials:
+    parameters = {
+        'K_h': Trial[0],
+        'K_p': Trial[1],
+        'K_i': Trial[2]
+    }
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+                      autopilot=pi_autopilot, fuel=500, parameters=parameters)
+    # add final positions, velocities and fuel load
+    results.append([parameters, score(result)])
+
+results = sorted(results, key=lambda x: x[1], reverse=True)
+
+
+with open('Trial Results PI.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in results:
+        writer.writerow([json.dumps(row[0]), str(row[1])])
+
+print("The top 5 tuning combinations tested for the PI autopilot are:")
+pprint.pprint(results[:5])
+print()
+
+trial_time = time.clock() - start_time
+print("It took " + str(trial_time) + " seconds to test " +
+      str(Trial_combinations) + " PI autopilot trials.")
+print("\n")
+
+
+# Automated Testing (PID Vertical)
+print("Initialising proportional-integral-derivative autopilot testing:")
+print()
+
+start_time = time.clock()
+
+Trial_combinations = np.size(
+    K_hlist) * np.size(K_plist) * np.size(K_ilist) * np.size(K_dlist)
+
+Trials = itertools.product(K_hlist, K_plist, K_ilist, K_dlist)
+
+for Trial in Trials:
+    parameters = {
+        'K_h': Trial[0],
+        'K_p': Trial[1],
+        'K_i': Trial[2],
+        'K_d': Trial[3]
+    }
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+                      autopilot=pid_autopilot, fuel=500, parameters=parameters)
+    # add final positions, velocities and fuel load
+    results.append([parameters, score(result)])
+
+results = sorted(results, key=lambda x: x[1], reverse=True)
+
+
+with open('Trial Results PID.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for row in results:
+        writer.writerow([json.dumps(row[0]), str(row[1])])
+
+print("The top 5 tuning combinations tested for the PID autopilot are:")
+pprint.pprint(results[:5])
+print()
+trial_time = time.clock() - start_time
+print("It took " + str(trial_time) + " seconds to test " +
+      str(Trial_combinations) + " PID autopilot trials.")
+print("\n")
+print("Testing complete!")
 
 #
 # argmin for retrieving coefficients
@@ -330,24 +431,24 @@ pprint.pprint(results[:5])
 # Best Proportional Autopilot test:
 
 
-def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
-    c = 0.0  # target landing speed, m/s
-    K_h = 0.016  # insert top result from the simulate function above
-    K_p = 1.0  # insert top result from the simulate function above
-    h = height(land, X)
-    e = - (c + K_h*h + V[1])
-    Pout = K_p*e
-    power = min(max(Pout, 0.0), 4.0)
-    # if i % 100 == 0:
-    #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
-    return (rotate, power)
+# def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
+#     c = 0.0  # target landing speed, m/s
+#     K_h = 0.016  # insert top result from the simulate function above
+#     K_p = 1.0  # insert top result from the simulate function above
+#     h = height(land, X)
+#     e = - (c + K_h*h + V[1])
+#     Pout = K_p*e
+#     power = min(max(Pout, 0.0), 4.0)
+#     # if i % 100 == 0:
+#     #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+#     return (rotate, power)
 
 
-X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., np.random.uniform(-10, -20)]
-Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-                                          autopilot=best_proportional_autopilot, fuel=500)
-plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+# V0 = [0., np.random.uniform(-10, -20)]
+# Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+#                                           autopilot=best_proportional_autopilot, fuel=500)
+# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # #Cartesian product(with several iterables):
 # print list(itertools.product([1, 2, 3], [4, 5, 6]))
