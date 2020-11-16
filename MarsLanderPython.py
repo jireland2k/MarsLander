@@ -17,6 +17,7 @@ rcParams['figure.figsize'] = (10, 8)
 g = 3.711  #  m/s^2, gravity on Mars
 power2thrust = 1000
 dt = 0.1
+# TODO: Run current code before meeting to showcase testing
 
 
 def mars_surface():
@@ -136,6 +137,7 @@ def simulate(X0, V0, land, landing_site,
                 mass -= power * dt
 
 # force to acceleration
+# TODO: Showcase implementation of drag
         Cd = 1.17  # equate to hemisphere with flat side pointed in velocity direction
         atmos_density = 0.020  # in kg/m ^ 3
         lander_area = 4.0  # in m^2
@@ -177,44 +179,6 @@ def simulate(X0, V0, land, landing_site,
             thrust[:Nstep, :], fuels[:Nstep], success)
 
 
-# # PLOTTING ENERGY DRIFT
-# m = 100.  # mass of lander in kg
-# dt = 0.1
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0.]
-# # number of steps required for 1 second of simulated time
-# Nstep = int((1.0 / dt) + 1)
-# Xs, Vs, thrust, success = simulate(
-#     X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
-
-# t = np.array([dt*i for i in range(Nstep)])
-# V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
-# T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
-# E = T + V
-
-# fig, ax = plt.subplots()
-# ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
-# ax.set_xlabel('Time / s')
-# ax.set_ylabel('Energy drift')
-# ax.legend()
-# assert t[0] == 0.0
-# assert t[-1] >= 1.0
-# assert len(t) == len(E) == Nstep
-# assert abs(E[-1] - E[0])/E[0] < 1e-3
-
-
-# def dummy_autopilot(i, X, V, fuel, rotate, power, parameters):
-#     return (rotate, power)  # do nothing
-
-
-# # STARTS DIRECTLY ABOVE LANDING SITE AND DOES NOTHING
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0.]
-# Xs, Vs, thrust, success = simulate(
-#     X0, V0, land, landing_site, dt=dt, autopilot=dummy_autopilot)
-# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
-
-
 def proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
@@ -243,6 +207,8 @@ def pi_autopilot(i, X, V, fuel, rotate, power, parameters):
     # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
 
+# TODO: Check if correct implementation of PID controller
+
 
 def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
@@ -266,43 +232,22 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
     return (rotate, power)
 
 
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0.]
-# Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-#                                    autopilot=proportional_autopilot, fuel=np.inf)
-# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
-
-
-# # PLOTTING TARGET SPEED AND ACTUAL SPEED
-# c = 10.0
-# K_h = 0.01  # fill in your value of K_h here
-
-# h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
-
-# fig, ax = plt.subplots()
-# ax.plot(-h, Vs[:, 1], label="actual speed")
-# ax.set_xlabel("- altitude")
-# ax.set_ylabel("Vertical velocity")
-# ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
-# ax.legend()
-
-
 # Automated Testing
 def score(result):
     Xs, Vs, thrust, fuels, success = result
     unit_conversion = 1.0
-    return np.sqrt(Vs[-1][1]**2 + unit_conversion * fuels[-1]**2)
+    return np.sqrt(Vs[-1][1]**2)  # + unit_conversion * fuels[-1]**2)
 
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
 results = []
 
-
-K_hlist = list(np.arange(0.001, 1.001, 0.100))
-K_plist = list(np.arange(0.1, 2.1, 0.2))
-K_ilist = list(np.arange(0.1, 2.1, 0.2))
-K_dlist = list(np.arange(0.1, 2.1, 0.2))
+# TODO: Arange gives weird floats not nice for formatting, fix
+K_hlist = list(np.linspace(0.000, 2.000, 11))
+K_plist = list(np.linspace(0.000, 2.000, 6))
+K_ilist = list(np.linspace(0.000, 2.000, 6))
+K_dlist = list(np.linspace(0.000, 2.000, 6))
 
 
 # Automated Testing (P Vertical)
@@ -325,7 +270,7 @@ for Trial in Trials:
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
 
-results = sorted(results, key=lambda x: x[1], reverse=True)
+results = sorted(results, key=lambda x: x[1])
 
 
 with open('Trial Results P.csv', 'w', newline='') as csvfile:
@@ -334,11 +279,12 @@ with open('Trial Results P.csv', 'w', newline='') as csvfile:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
+print()
 pprint.pprint(results[:5])
 print()
 
 trial_time = time.clock() - start_time
-print("It took " + str(trial_time) + " seconds to test " +
+print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(Trial_combinations) + " Proportional autopilot trials.")
 print("\n")
 
@@ -365,7 +311,7 @@ for Trial in Trials:
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
 
-results = sorted(results, key=lambda x: x[1], reverse=True)
+results = sorted(results, key=lambda x: x[1])
 
 
 with open('Trial Results PI.csv', 'w', newline='') as csvfile:
@@ -374,11 +320,12 @@ with open('Trial Results PI.csv', 'w', newline='') as csvfile:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
+print()
 pprint.pprint(results[:5])
 print()
 
 trial_time = time.clock() - start_time
-print("It took " + str(trial_time) + " seconds to test " +
+print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(Trial_combinations) + " PI autopilot trials.")
 print("\n")
 
@@ -406,19 +353,20 @@ for Trial in Trials:
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
 
-results = sorted(results, key=lambda x: x[1], reverse=True)
+results = sorted(results, key=lambda x: x[1])
 
-
+# TODO: Write to csv with parameters in a box as a float, retrieve best result for plotting
 with open('Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
+print()
 pprint.pprint(results[:5])
 print()
 trial_time = time.clock() - start_time
-print("It took " + str(trial_time) + " seconds to test " +
+print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(Trial_combinations) + " PID autopilot trials.")
 print("\n")
 print("Testing complete!")
@@ -428,108 +376,76 @@ print("Testing complete!")
 # scipy.minimize for more efficient search
 #
 
-# Best Proportional Autopilot test:
+# Best Autopilot test:
 
 
-# def best_proportional_autopilot(i, X, V, fuel, rotate, power, parameters):
-#     c = 0.0  # target landing speed, m/s
-#     K_h = 0.016  # insert top result from the simulate function above
-#     K_p = 1.0  # insert top result from the simulate function above
-#     h = height(land, X)
-#     e = - (c + K_h*h + V[1])
-#     Pout = K_p*e
-#     power = min(max(Pout, 0.0), 4.0)
-#     # if i % 100 == 0:
-#     #print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
-#     return (rotate, power)
+def best_autopilot(i, X, V, fuel, rotate, power, parameters):
+    c = 0.0  # target landing speed, m/s
+    e = 0
+    e_last = 0
+    K_h = 0.01
+    K_p = 0.2
+    K_i = 0.2
+    K_d = 0.2
+    h = height(land, X)
+    e = - (c + K_h*h + V[1])
+    integral_e = 0
+    integral_e += e * dt
+    diff_e = 0
+    diff_e = (e - e_last) / dt
+    e_last = e
+    Pout = K_p*e + K_i*integral_e + K_d*diff_e
+    power = min(max(Pout, 0.0), 4.0)
+    # if i % 100 == 0:
+    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+    return (rotate, power)
 
 
+# TODO: Showcase random velocity
+X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
+Vv_init = np.random.uniform(-10, -20)
+V0 = [0., Vv_init]
+Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                          autopilot=best_autopilot, fuel=500)
+plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+
+# PLOTTING TARGET SPEED AND ACTUAL SPEED
+c = 0.0
+K_h = 0.01  # fill in your value of K_h here
+K_p = 0.2
+K_i = 0.2
+K_d = 0.2
+h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
+
+fig, ax = plt.subplots()
+ax.plot(-h, Vs[:, 1], label="actual speed")
+ax.set_xlabel("- altitude")
+ax.set_ylabel("Vertical velocity")
+ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
+ax.legend()
+
+
+# # PLOTTING ENERGY DRIFT
+# m = 1000.  # mass of lander in kg
+# dt = 0.1
 # X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., np.random.uniform(-10, -20)]
-# Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-#                                           autopilot=best_proportional_autopilot, fuel=500)
-# plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+# V0 = [0., Vv_init]
+# # number of steps required for 1 second of simulated time
+# Nstep = int((1.0 / dt) + 1)
+# Xs, Vs, thrust, success = simulate(
+#     X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
 
-# #Cartesian product(with several iterables):
-# print list(itertools.product([1, 2, 3], [4, 5, 6]))
-# [(1, 4), (1, 5), (1, 6),
-#  (2, 4), (2, 5), (2, 6),
-#  (3, 4), (3, 5), (3, 6)]
+# t = np.array([dt*i for i in range(Nstep)])
+# V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
+# T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
+# E = T + V
 
-
-# TEST TEMPLATES
-
-# # first test with infinite fuel
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0., ]
-# Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-#                                    autopilot=proportional_autopilot, fuel=np.inf)
-# assert success
-# # now test with fuel=200
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., 0., ]
-# Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-#                                    autopilot=proportional_autopilot, fuel=200)
-# assert success
-
-
-# # Test 1. Random vertical starting positions
-# np.random.seed(123)  # seed random number generator for reproducible results
-# land, landing_site = mars_surface()
-
-# trials = 20
-# count = 0
-# for i in range(trials):
-#     X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) //
-#           2, randint(1500, 3000)]
-#     V0 = [0., 0.]
-#     print(f'X0={X0} V0={V0}')
-#     Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-#                                        autopilot=proportional_autopilot, fuel=200)
-#     count += success
-#     print()
-
-# print(f'count/trials = {count/trials}')
-# assert count/trials > 0.8  # require 80% success rate
-
-
-# # Test 2 - random initial vertical velocity
-
-# np.random.seed(123)  # seed random number generator for reproducible results
-# land, landing_site = mars_surface()
-
-# trials = 20
-# count = 0
-# for i in range(trials):
-#     X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) //
-#           2, randint(1500, 3000)]
-#     V0 = [0., np.random.uniform(-50, 50)]
-#     print(f'X0={X0} V0={V0}')
-#     Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-#                                        autopilot=proportional_autopilot, fuel=200)
-#     count += success
-#     print()
-
-# print(f'count/trials = {count/trials}')
-# assert count/trials > 0.8  # require 80% success rate
-
-
-# # Test 3 - random Martian surfaces
-
-# np.random.seed(123)  # seed random number generator for reproducible results
-
-# trials = 20
-# count = 0
-# for i in range(trials):
-#     land, landing_site = mars_surface()
-#     X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) //
-#           2, randint(1500, 3000)]
-#     V0 = [0., 0.]
-#     print(f'X0={X0} V0={V0}')
-#     Xs, Vs, thrust, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
-#                                        autopilot=proportional_autopilot, fuel=200)
-#     count += success
-#     print()
-
-# print(f'count/trials = {count/trials}')
-# assert count/trials > 0.8  # require 80% success rate
+# fig, ax = plt.subplots()
+# ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
+# ax.set_xlabel('Time / s')
+# ax.set_ylabel('Energy drift')
+# ax.legend()
+# assert t[0] == 0.0
+# assert t[-1] >= 1.0
+# assert len(t) == len(E) == Nstep
+# assert abs(E[-1] - E[0])/E[0] < 1e-3
