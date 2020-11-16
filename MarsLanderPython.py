@@ -8,10 +8,9 @@ import time
 
 from numpy.random import randint
 from numpy.linalg import norm
-
 from ipywidgets import interactive
-
 from matplotlib import rcParams
+
 rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
@@ -247,6 +246,9 @@ X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
 A0 = [0., -g]
 results = []
+resultsP = []
+resultsPI = []
+resultsPID = []
 
 # TODO: Arange gives weird floats not nice for formatting, fix
 # first number on linspace must not be 0 otherwise is not height dependent (hovers)
@@ -275,8 +277,12 @@ for Trial in Trials:
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    # results 2 is pretty printing
+    resultsP.append(["K_h", Trial[0], "K_p",
+                     Trial[1], "Score", score(result)])
 
 results = sorted(results, key=lambda x: x[1])
+resultsP = sorted(resultsP, key=lambda x: x[5])
 
 with open('Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
@@ -285,7 +291,13 @@ with open('Trial Results P.csv', 'w', newline='') as csvfile:
 
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
 print()
-pprint.pprint(results[:5])
+top_fiveP = resultsP[:5]
+for i in top_fiveP:
+    i[1] = '{:.3f}'.format(round(i[1], 3))
+    i[3] = '{:.3f}'.format(round(i[3], 3))
+    i[5] = '{:.3f}'.format(round(i[5], 3))
+
+pprint.pprint(top_fiveP)
 print()
 
 trial_time = time.clock() - start_time
@@ -315,8 +327,11 @@ for Trial in Trials:
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    resultsPI.append(["K_h", Trial[0], "K_p",
+                      Trial[1], "K_i", Trial[2], "Score", score(result)])
 
 results = sorted(results, key=lambda x: x[1])
+resultsPI = sorted(resultsPI, key=lambda x: x[7])
 
 
 with open('Trial Results PI.csv', 'w', newline='') as csvfile:
@@ -326,7 +341,14 @@ with open('Trial Results PI.csv', 'w', newline='') as csvfile:
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
-pprint.pprint(results[:5])
+top_fivePI = resultsPI[:5]
+for i in top_fivePI:
+    i[1] = '{:.3f}'.format(round(i[1], 3))
+    i[3] = '{:.3f}'.format(round(i[3], 3))
+    i[5] = '{:.3f}'.format(round(i[5], 3))
+    i[7] = '{:.3f}'.format(round(i[7], 3))
+
+pprint.pprint(top_fivePI)
 print()
 
 trial_time = time.clock() - start_time
@@ -357,8 +379,11 @@ for Trial in Trials:
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+    resultsPID.append(["K_h", Trial[0], "K_p",
+                       Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result)])
 
 results = sorted(results, key=lambda x: x[1])
+resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
 # TODO: Write to csv with parameters in a box as a float, retrieve best result for plotting
 with open('Trial Results PID.csv', 'w', newline='') as csvfile:
@@ -368,7 +393,16 @@ with open('Trial Results PID.csv', 'w', newline='') as csvfile:
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
-pprint.pprint(results[:5])
+top_fivePID = resultsPID[:5]
+for i in top_fivePID:
+    i[1] = '{:.3f}'.format(round(i[1], 3))
+    i[3] = '{:.3f}'.format(round(i[3], 3))
+    i[5] = '{:.3f}'.format(round(i[5], 3))
+    i[7] = '{:.3f}'.format(round(i[7], 3))
+    i[9] = '{:.3f}'.format(round(i[9], 3))
+
+pp = pprint.PrettyPrinter(width=100)
+pp.pprint(top_fivePID)
 print()
 trial_time = time.clock() - start_time
 print("It took " + f'{trial_time:.3f}' + " seconds to test " +
