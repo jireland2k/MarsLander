@@ -95,16 +95,19 @@ def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
 
-def simulate(X0, V0, land, landing_site,
+def simulate(X0, V0, A0, land, landing_site,
              fuel=200, dt=0.1, Nstep=1000,
              autopilot=None, print_interval=100, parameters=None):
 
     n = len(X0)       # number of degrees of freedom (2 here)
     X = X0.copy()     # current position
     V = V0.copy()     # current velocity
+    A = A0.copy()     # current acceleration
     Xs = np.zeros((Nstep, n))  # position history (trajectory)
     Vs = np.zeros((Nstep, n))  # velocity history
+    As = np.zeros((Nstep, n))  # acceleration history
     fuels = np.zeros(Nstep)
+
     thrust = np.zeros((Nstep, n))  # thrust history
     success = False
     fuel_warning_printed = False
@@ -115,7 +118,8 @@ def simulate(X0, V0, land, landing_site,
     for i in range(Nstep):
         Xs[i, :] = X     # Store positions
         Vs[i, :] = V     # Store velocities
-        fuels[i] = fuel  # store fuel
+        As[i, :] = A    # Store accelerations
+        fuels[i] = fuel  # Store fuel
 
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
@@ -175,7 +179,7 @@ def simulate(X0, V0, land, landing_site,
             Nstep = i
             break
 
-    return (Xs[:Nstep, :], Vs[:Nstep, :],
+    return (Xs[:Nstep, :], Vs[:Nstep, :], As[:Nstep, :],
             thrust[:Nstep, :], fuels[:Nstep], success)
 
 
@@ -234,13 +238,14 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
 
 # Automated Testing
 def score(result):
-    Xs, Vs, thrust, fuels, success = result
+    Xs, Vs, As, thrust, fuels, success = result
     unit_conversion = 1.0
     return np.sqrt(Vs[-1][1]**2)  # + unit_conversion * fuels[-1]**2)
 
 
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
+A0 = [0., -g]
 results = []
 
 # TODO: Arange gives weird floats not nice for formatting, fix
@@ -266,7 +271,7 @@ for Trial in Trials:
         'K_h': Trial[0],
         'K_p': Trial[1]
     }
-    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -306,7 +311,7 @@ for Trial in Trials:
         'K_p': Trial[1],
         'K_i': Trial[2]
     }
-    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -348,7 +353,7 @@ for Trial in Trials:
         'K_i': Trial[2],
         'K_d': Trial[3]
     }
-    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -405,8 +410,8 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 Vv_init = np.random.uniform(-10, -20)
 V0 = [0., Vv_init]
-Xs, Vs, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-                                          autopilot=best_autopilot, fuel=500)
+Xs, Vs, As, thrust, fuels, success = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                              autopilot=best_autopilot, fuel=500)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # PLOTTING TARGET SPEED AND ACTUAL SPEED
@@ -418,10 +423,11 @@ K_d = 1.2
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig, ax = plt.subplots()
-ax.plot(-h, Vs[:, 1], label="actual speed")
-ax.set_xlabel("- altitude")
+ax.plot(-h, Vs[:, 1], label="Actual speed")
+ax.plot(-h, As[:, 1], label="Acceleration experienced")
+ax.set_xlabel("- Altitude")
 ax.set_ylabel("Vertical velocity")
-ax.plot(-h, -(c + K_h*h), label=f"target speed K$_h$={K_h}")
+ax.plot(-h, -(c + K_h*h), label=f"Target speed K$_h$={K_h}")
 ax.legend()
 
 
