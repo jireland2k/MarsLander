@@ -428,6 +428,7 @@ ax.plot(-h, As[:, 1], label="Acceleration experienced")
 ax.set_xlabel("- Altitude")
 ax.set_ylabel("Vertical velocity")
 ax.plot(-h, -(c + K_h*h), label=f"Target speed K$_h$={K_h}")
+ax.grid(True)
 ax.legend()
 
 
