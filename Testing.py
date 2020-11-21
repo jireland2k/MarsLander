@@ -1,5 +1,18 @@
 from MarsLanderPython import *
 
+results = []
+resultsP = []
+resultsPI = []
+resultsPID = []
+
+# TODO: Arange gives weird floats not nice for formatting, fix
+# first number on linspace must not be 0 otherwise is not height dependent (hovers)
+K_hlist = list(np.linspace(0.001, 0.050, 8))
+K_plist = list(np.linspace(0.000, 2.000, 6))
+K_ilist = list(np.linspace(0.000, 2.000, 6))
+K_dlist = list(np.linspace(0.000, 2.000, 6))
+
+
 # Automated Testing (P Vertical)
 print("Initialising proportional autopilot testing:")
 print()

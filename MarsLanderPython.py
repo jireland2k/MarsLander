@@ -235,24 +235,14 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
     return (rotate, power)
 
 
-# Automated Testing
+# Automated Testing Score Function
 def score(result):
     Xs, Vs, As, thrust, fuels, success = result
     fuel_use_bias = 0.005
     return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 
 
+# Initial conditions
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
 A0 = [0., -g]
-results = []
-resultsP = []
-resultsPI = []
-resultsPID = []
-
-# TODO: Arange gives weird floats not nice for formatting, fix
-# first number on linspace must not be 0 otherwise is not height dependent (hovers)
-K_hlist = list(np.linspace(0.001, 0.050, 8))
-K_plist = list(np.linspace(0.000, 2.000, 6))
-K_ilist = list(np.linspace(0.000, 2.000, 6))
-K_dlist = list(np.linspace(0.000, 2.000, 6))
