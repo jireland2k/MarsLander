@@ -94,14 +94,14 @@ def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
 
-def simulate(X0, V0, A0, land, landing_site,
+def simulate(X0, V0, land, landing_site,
              fuel=200, dt=0.1, Nstep=1000,
              autopilot=None, print_interval=100, parameters=None):
 
     n = len(X0)       # number of degrees of freedom (2 here)
     X = X0.copy()     # current position
     V = V0.copy()     # current velocity
-    A = A0.copy()     # current acceleration
+    A = A0.copy()
     Xs = np.zeros((Nstep, n))  # position history (trajectory)
     Vs = np.zeros((Nstep, n))  # velocity history
     As = np.zeros((Nstep, n))  # acceleration history
@@ -238,7 +238,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
 # Automated Testing
 def score(result):
     Xs, Vs, As, thrust, fuels, success = result
-    fuel_use_bias = 0.00
+    fuel_use_bias = 0.005
     return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 
 
@@ -273,7 +273,7 @@ for Trial in Trials:
         'K_h': Trial[0],
         'K_p': Trial[1]
     }
-    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -331,7 +331,7 @@ for Trial in Trials:
         'K_p': Trial[1],
         'K_i': Trial[2]
     }
-    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -392,7 +392,7 @@ for Trial in Trials:
         'K_i': Trial[2],
         'K_d': Trial[3]
     }
-    result = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
+    result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
@@ -472,7 +472,7 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 Vv_init = np.random.uniform(-10, -20)
 V0 = [0., Vv_init]
-Xs, Vs, As, thrust, fuels, success = simulate(X0, V0, A0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                               autopilot=best_autopilot, fuel=500)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
