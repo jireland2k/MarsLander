@@ -1,12 +1,13 @@
 from MarsLanderPython import *
 
+# Result storage variables
 results = []
 resultsP = []
 resultsPI = []
 resultsPID = []
 
-# TODO: Arange gives weird floats not nice for formatting, fix
-# first number on linspace must not be 0 otherwise is not height dependent (hovers)
+# Generating parameter range (a, b) and number of equally spaced values within the range (c)
+# first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
 K_hlist = list(np.linspace(0.001, 0.050, 8))
 K_plist = list(np.linspace(0.000, 2.000, 6))
 K_ilist = list(np.linspace(0.000, 2.000, 6))
@@ -19,8 +20,10 @@ print()
 
 start_time = time.clock()
 
+# Number of parameter combinations to be tested
 Trial_combinations = np.size(K_hlist) * np.size(K_plist)
 
+# Every combination of each parameter
 Trials = itertools.product(K_hlist, K_plist)
 
 for Trial in Trials:
@@ -30,26 +33,30 @@ for Trial in Trials:
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
-    # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
+
+    # resultsP is for pretty printing
     Xs, Vs, As, thrust, fuels, success = result
-    # results 2 is pretty printing
     resultsP.append(["K_h", Trial[0], "K_p",
                      Trial[1], "Score", score(result), "Fuel remaining", fuels[-1]])
 
+# Sorting results by score
 results = sorted(results, key=lambda x: x[1])
 resultsP = sorted(resultsP, key=lambda x: x[5])
 
+# Writing results to CSV with the parameters explicitly stated
 with open('Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
         writer.writerow([json.dumps(row[0]), str(row[1])])
 
+# Writing results to CSV with just values of each parameter, the score, and fuel remaining for each trial
 with open('Trial Results Praw.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7])])
 
+# Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
 print()
 top_fiveP = resultsP[:5]
@@ -189,8 +196,3 @@ print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(Trial_combinations) + " PID autopilot trials.")
 print("\n")
 print("Testing complete!")
-
-#
-# argmin for retrieving coefficients
-# scipy.minimize for more efficient search
-#

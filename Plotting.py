@@ -3,6 +3,7 @@ from MarsLanderPython import *
 
 # Best Autopilot test:
 
+# Extract PID test results
 with open('Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
@@ -11,6 +12,7 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
     c = 0.0  # target landing speed, m/s
     e = 0
     e_last = 0
+    # extracting parameters from the trial with the best score
     K_h = float(data[0][0])
     K_p = float(data[0][1])
     K_i = float(data[0][2])
@@ -29,15 +31,16 @@ def best_autopilot(i, X, V, fuel, rotate, power, parameters):
     return (rotate, power)
 
 
-# TODO: Showcase random velocity
+# Plotting the best score trial
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-Vv_init = np.random.uniform(-10, -20)
-V0 = [0., Vv_init]
+V0 = [0., 0.]
+#Vv_init = np.random.uniform(-10, -20)
+#V0 = [0., Vv_init]
 Xs, Vs, As, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                               autopilot=best_autopilot, fuel=500)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
-# PLOTTING TARGET SPEED AND ACTUAL SPEED
+# Plotting target speed and actual speed
 c = 0.0
 K_h = float(data[0][0])
 K_p = float(data[0][1])

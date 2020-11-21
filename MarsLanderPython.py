@@ -16,7 +16,6 @@ rcParams['figure.figsize'] = (10, 8)
 g = 3.711  #  m/s^2, gravity on Mars
 power2thrust = 1000
 dt = 0.1
-# TODO: Run current code before meeting to showcase testing
 
 
 def mars_surface():
@@ -101,11 +100,11 @@ def simulate(X0, V0, land, landing_site,
     n = len(X0)       # number of degrees of freedom (2 here)
     X = X0.copy()     # current position
     V = V0.copy()     # current velocity
-    A = A0.copy()
+    A = A0.copy()     # current acceleration
     Xs = np.zeros((Nstep, n))  # position history (trajectory)
     Vs = np.zeros((Nstep, n))  # velocity history
     As = np.zeros((Nstep, n))  # acceleration history
-    fuels = np.zeros(Nstep)
+    fuels = np.zeros(Nstep)    # fuel history
 
     thrust = np.zeros((Nstep, n))  # thrust history
     success = False
@@ -117,7 +116,7 @@ def simulate(X0, V0, land, landing_site,
     for i in range(Nstep):
         Xs[i, :] = X     # Store positions
         Vs[i, :] = V     # Store velocities
-        As[i, :] = A    # Store accelerations
+        As[i, :] = A     # Store accelerations
         fuels[i] = fuel  # Store fuel
 
         if autopilot is not None:
@@ -139,8 +138,7 @@ def simulate(X0, V0, land, landing_site,
                 fuel -= power * dt
                 mass -= power * dt
 
-# force to acceleration
-# TODO: Showcase implementation of drag
+        # force to acceleration
         Cd = 1.17  # assume drag coefficient of hemisphere with flat side pointed in velocity direction
         atmos_density = 0.020  # in kg/m ^ 3
         lander_area = 4.0  # in m^2
@@ -148,8 +146,8 @@ def simulate(X0, V0, land, landing_site,
         Dh = - Cd*((atmos_density * (V[0]*np.abs(V[0])))/2)*lander_area/mass
         Dv = - Cd*((atmos_density * (V[1]*np.abs(V[1])))/2)*lander_area/mass
         A = np.array([0+Dh, -g+Dv]) + thrust[i, :] / mass  # acceleration
-        V += A * dt                                  # update velocities
-        X += V * dt                                  # update positions
+        V += A * dt  # update velocities
+        X += V * dt  # update positions
 
         # if i % print_interval == 0:
         #     print(f"i={i:03d} X=[{X[0]:8.3f} {X[1]:8.3f}] V=[{V[0]:8.3f} {V[1]:8.3f}]"
@@ -160,7 +158,7 @@ def simulate(X0, V0, land, landing_site,
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
                 # print("Crash! did not land on flat ground!")
                 pass
-            elif abs(rotate) > 0.087:  # radians
+            elif abs(rotate) > 5:  # Degrees
                 # print(
                 #     "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
                 pass
@@ -209,8 +207,6 @@ def pi_autopilot(i, X, V, fuel, rotate, power, parameters):
     # if i % 100 == 0:
     # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
     return (rotate, power)
-
-# TODO: Check if correct implementation of PID controller
 
 
 def pid_autopilot(i, X, V, fuel, rotate, power, parameters):
