@@ -49,7 +49,7 @@ K_d = float(data[0][3])
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig = plt.figure()
-ax = fig.add_subplot(111)
+ax = fig.add_subplot(211)
 
 Actual_velocity = ax.plot(-h, Vs[:, 1], 'b-', label="Actual velocity (m/s)")
 Target_velocity = ax.plot(-h, -(c + K_h*h), 'g-',
@@ -67,6 +67,22 @@ ax2.set_ylabel("Vertical acceleration (m/s^2)")
 ax2.set_ylim(-5, +5)
 ax.grid(True)
 
+ax3 = fig.add_subplot(212)
+Fuel1 = ax3.plot(-h, fuels[:], 'm-', label="Fuel remaining (kg)")
+
+ax4 = ax3.twinx()
+Thrust1 = ax4.plot(-h, thrust[:, 1],
+                   'c-', label="Thrust (N)")
+
+lines = Thrust1+Fuel1
+labs = [l.get_label() for l in lines]
+ax3.legend(lines, labs, loc=0)
+ax3.set_xlabel("-Altitude (m)")
+ax3.set_ylabel("Fuel remaining (kg)")
+#ax3.set_ylim(0, +500)
+ax4.set_ylabel("Thrust (N)")
+#ax4.set_ylim(0, +100)
+ax3.grid(True)
 
 # # PLOTTING ENERGY DRIFT
 # m = 1000.  # mass of lander in kg
