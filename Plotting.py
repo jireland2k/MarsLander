@@ -60,7 +60,7 @@ Accel_exp = ax2.plot(-h, As[:, 1], 'r-',
 
 lines = Actual_velocity+Target_velocity+Accel_exp
 labs = [l.get_label() for l in lines]
-ax.legend(lines, labs, loc=0)
+ax.legend(lines, labs, loc=9)
 ax.set_xlabel("-Altitude (m)")
 ax.set_ylabel("Vertical velocity (m/s)")
 ax2.set_ylabel("Vertical acceleration (m/s^2)")
@@ -76,7 +76,7 @@ Thrust1 = ax4.plot(-h, thrust[:, 1],
 
 lines = Thrust1+Fuel1
 labs = [l.get_label() for l in lines]
-ax3.legend(lines, labs, loc=0)
+ax3.legend(lines, labs, loc=8)
 ax3.set_xlabel("-Altitude (m)")
 ax3.set_ylabel("Fuel remaining (kg)")
 #ax3.set_ylim(0, +500)
