@@ -178,7 +178,7 @@ with open('Trial Results PIDraw.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13])])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
