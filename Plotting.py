@@ -7,45 +7,29 @@ from MarsLanderPython import *
 with open('Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
+K_h = float(data[0][0])
+K_p = float(data[0][1])
+K_i = float(data[0][2])
+K_d = float(data[0][3])
 
-def best_autopilot(i, X, V, fuel, rotate, power, parameters):
-    c = 0.0  # target landing speed, m/s
-    e = 0
-    e_last = 0
-    # extracting parameters from the trial with the best score
-    K_h = float(data[0][0])
-    K_p = float(data[0][1])
-    K_i = float(data[0][2])
-    K_d = float(data[0][3])
-    h = height(land, X)
-    e = - (c + K_h*h + V[1])
-    integral_e = 0
-    integral_e += e * dt
-    diff_e = 0
-    diff_e = (e - e_last) / dt
-    e_last = e
-    Pout = K_p*e + K_i*integral_e + K_d*diff_e
-    power = min(max(Pout, 0.0), 4.0)
-    # if i % 100 == 0:
-    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
-    return (rotate, power)
+parameters = {'K_h': K_h,
+              'K_p': K_p,
+              'K_i': K_i,
+              'K_d': K_d}
 
+best_autopilot = pid_autopilot
 
 # Plotting the best score trial
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0.]
 #Vv_init = np.random.uniform(-10, -20)
 #V0 = [0., Vv_init]
-Xs, Vs, As, thrust, fuels, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
-                                              autopilot=best_autopilot, fuel=500)
+Xs, Vs, As, thrust, fuels, errors, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                                      autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
 # Plotting target speed and actual speed
 c = 0.0
-K_h = float(data[0][0])
-K_p = float(data[0][1])
-K_i = float(data[0][2])
-K_d = float(data[0][3])
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig = plt.figure()

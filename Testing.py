@@ -9,9 +9,9 @@ resultsPID = []
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
 K_hlist = list(np.linspace(0.001, 0.050, 8))
-K_plist = list(np.linspace(0.000, 2.000, 6))
-K_ilist = list(np.linspace(0.000, 2.000, 6))
-K_dlist = list(np.linspace(0.000, 2.000, 6))
+K_plist = list(np.linspace(0.000, 0.500, 6))
+K_ilist = list(np.linspace(0.000, 0.500, 6))
+K_dlist = list(np.linspace(0.000, 0.500, 6))
 
 
 # Automated Testing (P Vertical)
@@ -36,7 +36,7 @@ for Trial in Trials:
     results.append([parameters, score(result)])
 
     # resultsP is for pretty printing
-    Xs, Vs, As, thrust, fuels, success = result
+    Xs, Vs, As, thrust, fuels, errors, success = result
     resultsP.append(["K_h", Trial[0], "K_p",
                      Trial[1], "Score", score(result), "Fuel remaining", fuels[-1]])
 
@@ -97,7 +97,7 @@ for Trial in Trials:
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
-    Xs, Vs, As, thrust, fuels, success = result
+    Xs, Vs, As, thrust, fuels, errors, success = result
     resultsPI.append(["K_h", Trial[0], "K_p",
                       Trial[1], "K_i", Trial[2], "Score", score(result), "Fuel remaining", fuels[-1]])
 
@@ -158,7 +158,7 @@ for Trial in Trials:
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
-    Xs, Vs, As, thrust, fuels, success = result
+    Xs, Vs, As, thrust, fuels, errors, success = result
     resultsPID.append(["K_h", Trial[0], "K_p",
                        Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result), "Fuel remaining", fuels[-1]])
 
