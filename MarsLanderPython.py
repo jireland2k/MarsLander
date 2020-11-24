@@ -236,7 +236,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errors, parameters):
 # Automated Testing Score Function
 def score(result):
     Xs, Vs, As, thrust, fuels, errors, success = result
-    fuel_use_bias = 0.000
+    fuel_use_bias = 0.005
     return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 
 

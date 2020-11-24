@@ -7,10 +7,14 @@ from MarsLanderPython import *
 with open('Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
-K_h = float(data[0][0])
-K_p = float(data[0][1])
-K_i = float(data[0][2])
-K_d = float(data[0][3])
+# K_h = float(data[0][0])
+# K_p = float(data[0][1])
+# K_i = float(data[0][2])
+# K_d = float(data[0][3])
+K_h = 0.009
+K_p = 0.1
+K_i = 0.004
+K_d = 0.03
 
 parameters = {'K_h': K_h,
               'K_p': K_p,
