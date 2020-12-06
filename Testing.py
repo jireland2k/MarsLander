@@ -9,9 +9,9 @@ resultsPID = []
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
 K_hlist = list(np.linspace(0.001, 0.050, 8))
-K_plist = list(np.linspace(0.000, 0.500, 11))
-K_ilist = list(np.linspace(0.000, 0.005, 11))
-K_dlist = list(np.linspace(0.000, 0.500, 11))
+K_plist = list(np.linspace(0.000, 0.500, 6))
+K_ilist = list(np.linspace(0.000, 0.005, 6))
+K_dlist = list(np.linspace(0.000, 0.500, 6))
 
 
 # Automated Testing (P Vertical)
