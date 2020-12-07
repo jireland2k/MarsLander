@@ -95,6 +95,10 @@ def interpolate_surface(land, x):
 def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
+def horizontal_diff(land, X):
+    landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
+    return X[0] - landtarget
+
 
 def simulate(X0, V0, land, landing_site,
              fuel=200, dt=0.1, Nstep=1000,
@@ -127,7 +131,7 @@ def simulate(X0, V0, land, landing_site,
 
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
-            rotate, power, ey = autopilot(
+            rotate, power, ey, ex = autopilot(
                 i, X, V, fuel, rotate, power, errory, errorx, parameters)
             assert abs(rotate) <= 90
             assert 0 <= power <= 4
@@ -192,13 +196,25 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, errory, errorx, paramet
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
+    K_diffx = parameters['K_diffx']
+    K_px = parameters['K_px']
+
     h = height(land, X)
+    diffx = horizontal_diff(land, X)
+
     ey = - (c + K_h*h + V[1])
-    Pout = K_p*ey
-    power = min(max(Pout, 0.0), 4.0)
+    ex = - (c +K_diffx*diffx + V[0])
+    errory[i] = ey
+    errorx[i] = ex
+
+    Pouty = K_p*ey
+    Poutx = K_px*ex
+    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+    rotate = angle
     # if i % 100 == 0:
     # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
-    return (rotate, power, ey)
+    return (rotate, power, ey, ex)
 
 
 def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
@@ -206,16 +222,29 @@ def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     K_h = parameters['K_h']
     K_p = parameters['K_p']
     K_i = parameters['K_i']
+    K_diffx = parameters['K_diffx']
+    K_px = parameters['K_px']
+    K_ix = parameters['K_ix']
+
     h = height(land, X)
+    diffx = horizontal_diff(land, X)
+
     ey = - (c + K_h*h + V[1])
+    ex = - (c +K_diffx*diffx + V[0])
     errory[i] = ey
+    errorx[i] = ex
     integral_ey = np.sum(errory[:i]) * dt
-    Pout = K_p*ey + K_i*integral_ey
-    power = min(max(Pout, 0.0), 4.0)
+    integral_ex = np.sum(errorx[:i]) * dt
+    
+    Pouty = K_p*ey + K_i*integral_ey
+    Poutx = K_px*ex + K_ix*integral_ex
+    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+    rotate = angle
     # if i % 500 == 0:
     #     print(
     #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f}')
-    return (rotate, power, ey)
+    return (rotate, power, ey, ex)
 
 
 def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
@@ -224,17 +253,32 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     K_p = parameters['K_p']
     K_i = parameters['K_i']
     K_d = parameters['K_d']
+    K_diffx = parameters['K_diffx']
+    K_px = parameters['K_px']
+    K_ix = parameters['K_ix']
+    K_dx = parameters['K_dx']
+
     h = height(land, X)
+    diffx = horizontal_diff(land, X)
+
     ey = - (c + K_h*h + V[1])
+    ex = - (c +K_diffx*diffx + V[0])
     errory[i] = ey
+    errorx[i] = ex
     integral_ey = np.sum(errory[:i]) * dt
+    integral_ex = np.sum(errorx[:i]) * dt
     diff_ey = (errory[i] - errory[i-1]) / dt
-    Pout = K_p*ey + K_i*integral_ey + K_d*diff_ey
-    power = min(max(Pout, 0.0), 4.0)
+    diff_ex = (errorx[i] - errorx[i-1]) / dt
+
+    Pouty = K_p*ey + K_i*integral_ey + K_d*diff_ey
+    Poutx = K_px*ex + K_ix*integral_ex + K_dx*diff_ex
+    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+    rotate = angle
     # if i % 500 == 0:
     #     print(
     #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f} diff_e={diff_e:8.3f}')
-    return (rotate, power, ey)
+    return (rotate, power, ey, ex)
 
 
 # Automated Testing Score Function
