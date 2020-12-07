@@ -19,6 +19,16 @@ g = 3.711  #  m/s^2, gravity on Mars
 wind = +70
 power2thrust = 1000
 dt = 0.1
+parameters = {
+        'K_h': 0,
+        'K_p': 0,
+        'K_i': 0,
+        'K_d': 0,
+        'K_diffx': 0,
+        'K_px': 0,
+        'K_ix': 0,
+        'K_dx': 0
+    }
 
 
 def mars_surface():
@@ -133,7 +143,7 @@ def simulate(X0, V0, land, landing_site,
             # call user-supplied function to set `rotate` and `power`
             rotate, power, ey, ex = autopilot(
                 i, X, V, fuel, rotate, power, errory, errorx, parameters)
-            assert abs(rotate) <= 90
+            assert abs(rotate) <= 45
             assert 0 <= power <= 4
 
             rotate_rad = rotate * np.pi / 180.0  # degrees to radians

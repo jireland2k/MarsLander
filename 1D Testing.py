@@ -32,7 +32,9 @@ Trials = itertools.product(K_hlist, K_plist)
 for Trial in Trials:
     parameters = {
         'K_h': Trial[0],
-        'K_p': Trial[1]
+        'K_p': Trial[1],
+        'K_diffx': 0,
+        'K_px': 0
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=proportional_autopilot, fuel=500, parameters=parameters)
@@ -96,7 +98,10 @@ for Trial in Trials:
     parameters = {
         'K_h': Trial[0],
         'K_p': Trial[1],
-        'K_i': Trial[2]
+        'K_i': Trial[2],
+        'K_diffx': 0,
+        'K_px': 0,
+        'K_ix': 0
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
@@ -158,7 +163,11 @@ for Trial in Trials:
         'K_h': Trial[0],
         'K_p': Trial[1],
         'K_i': Trial[2],
-        'K_d': Trial[3]
+        'K_d': Trial[3],
+        'K_diffx': 0,
+        'K_px': 0,
+        'K_ix': 0,
+        'K_dx': 0
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)

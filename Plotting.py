@@ -4,7 +4,7 @@ from MarsLanderPython import *
 # Best Autopilot test:
 
 # Extract PID test results
-with open('Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -12,10 +12,22 @@ K_p = float(data[0][1])
 K_i = float(data[0][2])
 K_d = float(data[0][3])
 
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
+    data2 = list(csv.reader(csvDataFile))
+
+K_diffx = float(data2[0][0])
+K_px = float(data2[0][1])
+K_ix = float(data2[0][2])
+K_dx = float(data2[0][3])
+
 parameters = {'K_h': K_h,
               'K_p': K_p,
               'K_i': K_i,
-              'K_d': K_d}
+              'K_d': K_d,
+              'K_diffx': K_diffx,
+              'K_px': K_px,
+              'K_ix': K_ix,
+              'K_dx': K_dx,}
 
 
 # Plotting the best score trial

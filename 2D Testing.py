@@ -6,7 +6,6 @@ resultsP = []
 resultsPI = []
 resultsPID = []
 
-
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
 K_diffxlist = list(np.linspace(0.001, 0.050, 8))
 K_pxlist = list(np.linspace(0.000, 0.500, 6))
@@ -17,7 +16,7 @@ K_dxlist = list(np.linspace(0.000, 0.500, 6))
 # Automated Testing (P Vertical)
 
 # Extract 1D P test results
-with open('Trial Results Praw.csv') as csvDataFile:
+with open('1D Trial Results Praw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -92,7 +91,7 @@ print("\n")
 # Automated Testing (PI Vertical)
 
 # Extract 1D PI test results
-with open('Trial Results PIraw.csv') as csvDataFile:
+with open('1D Trial Results PIraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -167,7 +166,7 @@ print("\n")
 # Automated Testing (PID Vertical)
 
 # Extract 1D PI test results
-with open('Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
