@@ -24,7 +24,7 @@ V0 = [0., 0.]
 #Vv_init = np.random.uniform(-10, -20)
 #V0 = [0., Vv_init]
 best_autopilot = pid_autopilot
-Xs, Vs, As, thrust, fuels, errors, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 

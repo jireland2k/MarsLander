@@ -109,7 +109,8 @@ def simulate(X0, V0, land, landing_site,
     Vs = np.zeros((Nstep, n))  # velocity history
     As = np.zeros((Nstep, n))  # acceleration history
     fuels = np.zeros(Nstep)    # fuel history
-    errors = np.zeros(Nstep)
+    errory = np.zeros(Nstep)
+    errorx = np.zeros(Nstep)
 
     thrust = np.zeros((Nstep, n))  # thrust history
     success = False
@@ -126,8 +127,8 @@ def simulate(X0, V0, land, landing_site,
 
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
-            rotate, power, e = autopilot(
-                i, X, V, fuel, rotate, power, errors, parameters)
+            rotate, power, ey = autopilot(
+                i, X, V, fuel, rotate, power, errory, errorx, parameters)
             assert abs(rotate) <= 90
             assert 0 <= power <= 4
 
@@ -150,10 +151,8 @@ def simulate(X0, V0, land, landing_site,
         atmos_density = 0.020  # in kg/m ^ 3
         lander_area = 4.0  # in m^2
         # D = Drag force: drag coefficient * ((atmospheric density * velocity^2)/2) * lander area
-        Dh = - Cd * \
-            ((atmos_density *
-              ((wind - V[0])*np.abs((wind - V[0]))))/2)*lander_area/mass
-        Dv = - Cd*((atmos_density * (V[1]*np.abs(V[1])))/2)*lander_area/mass
+        Dh = - Cd * ((atmos_density * (((wind - V[0])**2) * np.sign(V[0])))/2) * lander_area / mass
+        Dv = - Cd * ((atmos_density * (((V[1])**2) * np.sign(V[1]))/2)) * lander_area / mass
         A = np.array([0+Dh, -g+Dv]) + thrust[i, :] / mass  # acceleration
         V += A * dt  # update velocities
         X += V * dt  # update positions
@@ -186,61 +185,61 @@ def simulate(X0, V0, land, landing_site,
             break
 
     return (Xs[:Nstep, :], Vs[:Nstep, :], As[:Nstep, :],
-            thrust[:Nstep, :], fuels[:Nstep], errors[:Nstep], success)
+            thrust[:Nstep, :], fuels[:Nstep], errory[:Nstep], errorx[:Nstep], success)
 
 
-def proportional_autopilot(i, X, V, fuel, rotate, power, errors, parameters):
+def proportional_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
     h = height(land, X)
-    e = - (c + K_h*h + V[1])
-    Pout = K_p*e
+    ey = - (c + K_h*h + V[1])
+    Pout = K_p*ey
     power = min(max(Pout, 0.0), 4.0)
     # if i % 100 == 0:
     # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
-    return (rotate, power, e)
+    return (rotate, power, ey)
 
 
-def pi_autopilot(i, X, V, fuel, rotate, power, errors, parameters):
+def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
     K_i = parameters['K_i']
     h = height(land, X)
-    e = - (c + K_h*h + V[1])
-    errors[i] = e
-    integral_e = np.sum(errors[:i]) * dt
-    Pout = K_p*e + K_i*integral_e
+    ey = - (c + K_h*h + V[1])
+    errory[i] = ey
+    integral_ey = np.sum(errory[:i]) * dt
+    Pout = K_p*ey + K_i*integral_ey
     power = min(max(Pout, 0.0), 4.0)
     # if i % 500 == 0:
     #     print(
     #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f}')
-    return (rotate, power, e)
+    return (rotate, power, ey)
 
 
-def pid_autopilot(i, X, V, fuel, rotate, power, errors, parameters):
+def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
     K_i = parameters['K_i']
     K_d = parameters['K_d']
     h = height(land, X)
-    e = - (c + K_h*h + V[1])
-    errors[i] = e
-    integral_e = np.sum(errors[:i]) * dt
-    diff_e = (errors[i] - errors[i-1]) / dt
-    Pout = K_p*e + K_i*integral_e + K_d*diff_e
+    ey = - (c + K_h*h + V[1])
+    errory[i] = ey
+    integral_ey = np.sum(errory[:i]) * dt
+    diff_ey = (errory[i] - errory[i-1]) / dt
+    Pout = K_p*ey + K_i*integral_ey + K_d*diff_ey
     power = min(max(Pout, 0.0), 4.0)
     # if i % 500 == 0:
     #     print(
     #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f} diff_e={diff_e:8.3f}')
-    return (rotate, power, e)
+    return (rotate, power, ey)
 
 
 # Automated Testing Score Function
 def score(result):
-    Xs, Vs, As, thrust, fuels, errors, success = result
+    Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     fuel_use_bias = 0.005
     return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 

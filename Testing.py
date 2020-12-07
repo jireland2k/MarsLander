@@ -36,7 +36,7 @@ for Trial in Trials:
     results.append([parameters, score(result)])
 
     # resultsP is for pretty printing
-    Xs, Vs, As, thrust, fuels, errors, success = result
+    Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsP.append(["K_h", Trial[0], "K_p",
                      Trial[1], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
 
@@ -99,7 +99,7 @@ for Trial in Trials:
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
-    Xs, Vs, As, thrust, fuels, errors, success = result
+    Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPI.append(["K_h", Trial[0], "K_p",
                       Trial[1], "K_i", Trial[2], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
 
@@ -161,7 +161,7 @@ for Trial in Trials:
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
     results.append([parameters, score(result)])
-    Xs, Vs, As, thrust, fuels, errors, success = result
+    Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPID.append(["K_h", Trial[0], "K_p",
                        Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
 
