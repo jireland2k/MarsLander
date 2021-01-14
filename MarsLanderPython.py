@@ -15,6 +15,8 @@ from matplotlib import rcParams
 rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
+# wind = np.random(0.000, 70)
+wind = +30
 power2thrust = 1000
 dt = 0.1
 parameters = {
@@ -163,7 +165,8 @@ def simulate(X0, V0, land, landing_site,
         atmos_density = 0.020  # in kg/m ^ 3
         lander_area = 4.0  # in m^2
         # D = Drag force: drag coefficient * ((atmospheric density * velocity^2)/2) * lander area
-        Dh = - Cd * ((atmos_density * (((wind - V[0])**2) * np.sign(V[0])))/2) * lander_area / mass
+        relative_wind = wind - V[0]
+        Dh = Cd * ((atmos_density * ((relative_wind**2) * np.sign(relative_wind)))/2) * lander_area / mass
         Dv = - Cd * ((atmos_density * (((V[1])**2) * np.sign(V[1]))/2)) * lander_area / mass
         A = np.array([0+Dh, -g+Dv]) + thrust[i, :] / mass  # acceleration
         V += A * dt  # update velocities
@@ -306,9 +309,7 @@ def score(result):
     return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
 
 
-# Initial conditions
+# Initial Lander Kinematic
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0., ]
-A0 = [0., -g]
-# wind = np.random(0., 70)
-wind = +70
+V0 = [0.000, 0.000, ]
+A0 = [0.000, -g]
