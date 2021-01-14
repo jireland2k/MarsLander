@@ -15,8 +15,6 @@ from matplotlib import rcParams
 rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
-# wind = np.random(0., 70)
-wind = +70
 power2thrust = 1000
 dt = 0.1
 parameters = {
@@ -219,11 +217,15 @@ def proportional_autopilot(i, X, V, fuel, rotate, power, errory, errorx, paramet
 
     Pouty = K_p*ey
     Poutx = K_px*ex
-    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
-    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
-    rotate = angle
-    # if i % 100 == 0:
-    # print(f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f}')
+
+    if Pouty > 0:
+        power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+        angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+        rotate = angle
+    else:
+        power = 0
+        rotate = 0
+    
     return (rotate, power, ey, ex)
 
 
@@ -248,12 +250,15 @@ def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     
     Pouty = K_p*ey + K_i*integral_ey
     Poutx = K_px*ex + K_ix*integral_ex
-    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
-    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
-    rotate = angle
-    # if i % 500 == 0:
-    #     print(
-    #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f}')
+
+    if Pouty > 0:
+        power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+        angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+        rotate = angle
+    else:
+        power = 0
+        rotate = 0
+    
     return (rotate, power, ey, ex)
 
 
@@ -282,12 +287,15 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
 
     Pouty = K_p*ey + K_i*integral_ey + K_d*diff_ey
     Poutx = K_px*ex + K_ix*integral_ex + K_dx*diff_ex
-    power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
-    angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
-    rotate = angle
-    # if i % 500 == 0:
-    #     print(
-    #         f'e={e:8.3f} Pout={Pout:8.3f} power={power:8.3f} integral_e={integral_e:8.3f} diff_e={diff_e:8.3f}')
+
+    if Pouty > 0:
+        power = min(max(np.sqrt(Pouty**2+Poutx**2), 0.0), 4.0)
+        angle = min(45,max(np.arctan2(Poutx, Pouty)*(180/np.pi),-45))
+        rotate = angle
+    else:
+        power = 0
+        rotate = 0
+    
     return (rotate, power, ey, ex)
 
 
@@ -302,3 +310,5 @@ def score(result):
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0., 0., ]
 A0 = [0., -g]
+# wind = np.random(0., 70)
+wind = +70

@@ -1,8 +1,5 @@
 from MarsLanderPython import *
 
-#overwrite 2D wind setting with 0 for 1D case
-wind = 0
-
 # Result storage variables
 results = []
 resultsP = []
