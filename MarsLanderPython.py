@@ -309,7 +309,7 @@ def score(result):
     # return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
     return np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)
 
-# Initial Lander Kinematic
+# Initial Lander Kinematics
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
 V0 = [0.000, 0.000, ]
 A0 = [0.000, -g]

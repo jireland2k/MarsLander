@@ -177,7 +177,7 @@ for Trial in Trials:
 results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
-# TODO: Write to csv with parameters in a box as a float, retrieve best result for plotting
+
 with open('1D Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:
