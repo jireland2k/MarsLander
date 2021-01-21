@@ -16,7 +16,7 @@ rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
 # wind = np.random(0.000, 70)
-wind = +30
+wind = +70 # set to 0 for 1D Testing
 power2thrust = 1000
 dt = 0.1
 parameters = {
@@ -306,8 +306,8 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
 def score(result):
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     fuel_use_bias = 0.005
-    return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
-
+    # return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
+    return np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)
 
 # Initial Lander Kinematic
 X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]

@@ -45,9 +45,8 @@ c = 0.0
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
 fig = plt.figure()
-plt.subplots_adjust(hspace=0.4)
-ax = fig.add_subplot(311)
-
+plt.subplots_adjust(hspace=0.3, wspace=0.4)
+ax = fig.add_subplot(221)
 Actual_velocity = ax.plot(-h, Vs[:, 1], 'b-', label="Actual velocity (m/s)")
 Target_velocity = ax.plot(-h, -(c + K_h*h), 'g-',
                           label=f"Target velocity K$_h$={K_h:.3f}")
@@ -64,7 +63,7 @@ ax2.set_ylabel("Vertical acceleration (m/s^2)")
 ax2.set_ylim(-4, +4)
 ax.grid(True)
 
-ax3 = fig.add_subplot(312)
+ax3 = fig.add_subplot(222)
 Fuel1 = ax3.plot(-h, fuels[:], 'm-', label="Fuel remaining (kg)")
 
 ax4 = ax3.twinx()
@@ -84,7 +83,7 @@ ax3.yaxis.set_major_locator(loc)
 ax3.grid(True)
 
 
-ax5 = fig.add_subplot(313)
+ax5 = fig.add_subplot(223)
 Nstep = int(len(Vs))
 t = np.array([dt*i for i in range(Nstep)])
 Actual_velocity = ax5.plot(
@@ -103,6 +102,27 @@ ax5.set_ylabel("Vertical velocity (m/s)")
 ax6.set_ylabel("Vertical acceleration (m/s^2)")
 ax6.set_ylim(-4, +4)
 ax5.grid(True)
+
+
+ax7 = fig.add_subplot(224)
+Nstep = int(len(Vs))
+t = np.array([dt*i for i in range(Nstep)])
+Actual_velocity = ax7.plot(
+    t, Vs[:, 0], 'b-', label="Horizontal velocity (m/s)")
+ax8 = ax7.twinx()
+Accel_exp = ax8.plot(t, As[:, 0], 'r-',
+                     label="Horizontal acceleration experienced (m/s^2)")
+
+lines = Actual_velocity+Accel_exp
+labs = [l.get_label() for l in lines]
+ax7.legend(lines, labs, loc=4)
+ax7.set_xlabel("Time(s)")
+ax7.set_ylabel("Horizontal velocity (m/s)")
+ax8.set_ylabel("Horizontal acceleration (m/s^2)")
+ax7.set_ylim(-3, +3)
+ax8.set_ylim(-1, +1)
+ax7.grid(True)
+
 
 
 # # PLOTTING ENERGY DRIFT
