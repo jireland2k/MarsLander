@@ -16,7 +16,7 @@ rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
 # wind = np.random(0.000, 70)
-wind = +70 # set to 0 for 1D Testing
+wind = 70 # set to 0 for 1D Testing
 power2thrust = 1000
 dt = 0.1
 parameters = {
@@ -66,6 +66,10 @@ def plot_surface(land, landing_site):
     ax.plot(land[landing_site+1:, 0], land[landing_site+1:, 1], 'k-')
     ax.plot([land[landing_site, 0], land[landing_site+1, 0]],
             [land[landing_site, 1], land[landing_site+1, 1]], 'k--')
+    landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
+    toptarget = (landtarget, landtarget)
+    bottomtarget = (0, 3000)
+    ax.plot(toptarget, bottomtarget, 'g-')
     ax.set_xlim(0, 7000)
     ax.set_ylim(0, 3000)
     return ax
@@ -111,7 +115,7 @@ def horizontal_diff(land, X):
 
 
 def simulate(X0, V0, land, landing_site,
-             fuel=200, dt=0.1, Nstep=1000,
+             fuel=500, dt=0.1, Nstep=1000,
              autopilot=None, print_interval=100, parameters=None):
 
     n = len(X0)       # number of degrees of freedom (2 here)
@@ -203,7 +207,7 @@ def simulate(X0, V0, land, landing_site,
             thrust[:Nstep, :], fuels[:Nstep], errory[:Nstep], errorx[:Nstep], success)
 
 
-def proportional_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
+def p_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
@@ -310,6 +314,6 @@ def score(result):
     return np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)
 
 # Initial Lander Kinematics
-X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0.000, 0.000, ]
+X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2) +500, 3000]
+V0 = [10., -20., ] # set to [0, -20] for 1D Testing
 A0 = [0.000, -g]

@@ -7,9 +7,9 @@ resultsPI = []
 resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
-K_diffxlist = list(np.linspace(0.001, 0.050, 8))
-K_pxlist = list(np.linspace(0.000, 0.500, 6))
-K_ixlist = list(np.linspace(0.000, 0.005, 6))
+K_diffxlist = list(np.linspace(0.001, 0.042, 7))
+K_pxlist = list(np.linspace(0.000, 1.000, 6))
+K_ixlist = list(np.linspace(0.000, 0.010, 6))
 K_dxlist = list(np.linspace(0.000, 0.500, 6))
 
 
@@ -43,7 +43,7 @@ for Trial in Trials:
         'K_px': Trial[1]
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-                      autopilot=proportional_autopilot, fuel=500, parameters=parameters)
+                      autopilot=p_autopilot, fuel=500, parameters=parameters)
     results.append([parameters, score(result)])
 
     # resultsP is for pretty printing
@@ -207,7 +207,7 @@ for Trial in Trials:
 results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
-# TODO: Write to csv with parameters in a box as a float, retrieve best result for plotting
+
 with open('2D Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in results:

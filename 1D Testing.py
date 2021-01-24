@@ -8,9 +8,9 @@ resultsPID = []
 
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
-K_hlist = list(np.linspace(0.001, 0.050, 8))
-K_plist = list(np.linspace(0.000, 0.500, 6))
-K_ilist = list(np.linspace(0.000, 0.005, 6))
+K_hlist = list(np.linspace(0.001, 0.042, 7))
+K_plist = list(np.linspace(0.000, 1.000, 6))
+K_ilist = list(np.linspace(0.000, 0.010, 6))
 K_dlist = list(np.linspace(0.000, 0.500, 6))
 
 
@@ -34,7 +34,7 @@ for Trial in Trials:
         'K_px': 0
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
-                      autopilot=proportional_autopilot, fuel=500, parameters=parameters)
+                      autopilot=p_autopilot, fuel=500, parameters=parameters)
     results.append([parameters, score(result)])
 
     # resultsP is for pretty printing

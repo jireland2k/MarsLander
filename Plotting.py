@@ -31,11 +31,11 @@ parameters = {'K_h': K_h,
 
 
 # Plotting the best score trial
-X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-V0 = [0., 0.]
+# X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+500, 3000]
+# V0 = [10., -20.]
 #Vv_init = np.random.uniform(-10, -20)
 #V0 = [0., Vv_init]
-best_autopilot = proportional_autopilot
+best_autopilot = p_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
