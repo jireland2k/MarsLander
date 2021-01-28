@@ -309,11 +309,15 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
 # Automated Testing Score Function
 def score(result):
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
-    fuel_use_bias = 0.005
+    fuel_use_bias = 0.00
+    position_bias = 0.01
+    velocity_bias = 1
+    landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
+    hdiff = Xs[-1][0]-landtarget
     # return np.sqrt(Vs[-1][1]**2) + (fuel_use_bias * (((500-fuels[-1]))))
-    return np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)
+    return (velocity_bias * np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)) + (position_bias * np.abs(hdiff)) + (fuel_use_bias * (500-fuels[-1]))
 
 # Initial Lander Kinematics
-X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2) +500, 3000]
+X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+500, 3000] # remove additional x term (outside the brackets) for 1D Testing
 V0 = [10., -20., ] # set to [0, -20] for 1D Testing
 A0 = [0.000, -g]

@@ -4,21 +4,21 @@ from MarsLanderPython import *
 # Best Autopilot test:
 
 # Extract PID test results
-with open('1D Trial Results Praw.csv') as csvDataFile:
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
 K_p = float(data[0][1])
-K_i = 0
-K_d = 0
+K_i = float(data[0][2])
+K_d = float(data[0][3])
 
-with open('2D Trial Results Praw.csv') as csvDataFile:
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
 K_px = float(data2[0][1])
-K_ix = 0
-K_dx = 0
+K_ix = float(data2[0][2])
+K_dx = float(data2[0][3])
 
 parameters = {'K_h': K_h,
               'K_p': K_p,
@@ -35,7 +35,7 @@ parameters = {'K_h': K_h,
 # V0 = [10., -20.]
 #Vv_init = np.random.uniform(-10, -20)
 #V0 = [0., Vv_init]
-best_autopilot = p_autopilot
+best_autopilot = pid_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
