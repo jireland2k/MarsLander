@@ -1,5 +1,5 @@
 from MarsLanderPython import *
-
+from mpl_toolkits.mplot3d import Axes3D
 
 # Best Autopilot test:
 
@@ -137,6 +137,7 @@ ax7.grid(True)
 
 #P trials velocity/position plot
 scoreP = []
+fuelP = []
 dftP = []
 velP = []
 with open('2D Trial Results Praw.csv') as csvDataFile:
@@ -144,6 +145,8 @@ with open('2D Trial Results Praw.csv') as csvDataFile:
     
 for row in data3:
     scoreP.append([row[2]])
+    fuelusedP = 500 - float(row[5])
+    fuelP.append([fuelusedP])
     distance_from_target = float(row[4])
     dftP.append(distance_from_target)
     vel1 = float(row[5])
@@ -163,6 +166,7 @@ ax.grid(True)
 
 #PI trials velocity/position plot
 scorePI = []
+fuelPI = []
 dftPI = []
 velPI = []
 with open('2D Trial Results PIraw.csv') as csvDataFile:
@@ -170,6 +174,8 @@ with open('2D Trial Results PIraw.csv') as csvDataFile:
     
 for row in data4:
     scorePI.append([row[3]])
+    fuelusedPI = 500 - float(row[5])
+    fuelPI.append([fuelusedPI])
     distance_from_target = float(row[5])
     dftPI.append(distance_from_target)
     vel1 = float(row[6])
@@ -189,6 +195,7 @@ ax.grid(True)
 
 #PID trials velocity/position plot
 scorePID = []
+fuelPID = []
 dftPID = []
 velPID = []
 with open('2D Trial Results PIDraw.csv') as csvDataFile:
@@ -196,6 +203,8 @@ with open('2D Trial Results PIDraw.csv') as csvDataFile:
     
 for row in data5:
     scorePID.append([row[4]])
+    fuelusedPID = 500 - float(row[5])
+    fuelPID.append([fuelusedPID])
     distance_from_target = float(row[6])
     dftPID.append(distance_from_target)
     vel1 = float(row[7])
@@ -212,17 +221,34 @@ ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_xlim(-10, +10)
 ax.grid(True)
 
-fig5 = plt.figure()
-ax = fig5.add_subplot(111)
+
+#all three autpilots superposed
+fig4 = plt.figure()
+ax = fig4.add_subplot(111)
 ax.plot(dftP, velP, 'rx')
 ax.plot(dftPI, velPI, 'x', color='orange')
-ax.plot(dftPID, velPID, 'gx')
+ax.plot(dftPID, velPID, 'gx')       
 ax.set_xlabel("Distance from Target (m)")
 ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_ylim(0, +1)
 # ax.set_xlim(-10, +10)
 ax.grid(True)
 
+
+for i in range(0, 360, 45):
+    fig6 = plt.figure()
+    ax = fig6.add_subplot(111, projection='3d')
+    ax.scatter(dftP, fuelP, velP, c='r', marker='x', depthshade=False)
+    ax.scatter(dftPI, fuelPI, velPI, c='orange', marker='x', depthshade=False)
+    ax.scatter(dftPID, fuelPID, velPID, c='g', marker='x', depthshade=False)
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_zlabel("Velocity at Impact (m/s)")
+    ax.set_ylabel("Fuel used (kg)")
+    #ax.set_ylim(0, +5)
+    #ax.set_xlim(-10, +10)
+    ax.grid(True)
+    ax.view_init(elev=0, azim = i)
+    plt.show()
 
 # # PLOTTING ENERGY DRIFT
 # m = 1000.  # mass of lander in kg
