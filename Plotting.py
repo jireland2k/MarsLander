@@ -145,7 +145,7 @@ with open('2D Trial Results Praw.csv') as csvDataFile:
     
 for row in data3:
     scoreP.append([row[2]])
-    fuelusedP = 500 - float(row[5])
+    fuelusedP = 500 - float(row[3])
     fuelP.append([fuelusedP])
     distance_from_target = float(row[4])
     dftP.append(distance_from_target)
@@ -174,7 +174,7 @@ with open('2D Trial Results PIraw.csv') as csvDataFile:
     
 for row in data4:
     scorePI.append([row[3]])
-    fuelusedPI = 500 - float(row[5])
+    fuelusedPI = 500 - float(row[4])
     fuelPI.append([fuelusedPI])
     distance_from_target = float(row[5])
     dftPI.append(distance_from_target)
@@ -235,7 +235,7 @@ ax.set_ylabel("Velocity at Impact (m/s)")
 ax.grid(True)
 
 
-for i in range(0, 360, 45):
+for i in range(0, 360, 15):
     fig6 = plt.figure()
     ax = fig6.add_subplot(111, projection='3d')
     ax.scatter(dftP, fuelP, velP, c='r', marker='x', depthshade=False)
@@ -247,7 +247,7 @@ for i in range(0, 360, 45):
     #ax.set_ylim(0, +5)
     #ax.set_xlim(-10, +10)
     ax.grid(True)
-    ax.view_init(elev=0, azim = i)
+    ax.view_init(elev=10, azim = i)
     plt.show()
 
 # # PLOTTING ENERGY DRIFT
