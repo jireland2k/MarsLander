@@ -135,6 +135,95 @@ ax8.set_ylim(-1, +1)
 ax7.grid(True)
 
 
+#P trials velocity/position plot
+scoreP = []
+d2tP = []
+velP = []
+with open('2D Trial Results Praw.csv') as csvDataFile:
+    data3 = list(csv.reader(csvDataFile))
+    
+for row in data3:
+    scoreP.append([row[2]])
+    distance2target = float(row[4])
+    d2tP.append(distance2target)
+    vel1 = float(row[5])
+    vel2 = float(row[6])
+    vel3 = np.sqrt(vel1**2 + vel2**2)
+    velP.append([vel3])
+
+fig2 = plt.figure()
+ax = fig2.add_subplot(111)
+ax.plot(d2tP, velP, 'rx')       
+ax.set_xlabel("Distance to Target (m)")
+ax.set_ylabel("Velocity at Impact (m/s)")
+# ax.set_ylim(0, +1)
+# ax.set_xlim(-10, +10)
+ax.grid(True)
+
+
+#PI trials velocity/position plot
+scorePI = []
+d2tPI = []
+velPI = []
+with open('2D Trial Results PIraw.csv') as csvDataFile:
+    data4 = list(csv.reader(csvDataFile))
+    
+for row in data4:
+    scorePI.append([row[3]])
+    distance2target = float(row[5])
+    d2tPI.append(distance2target)
+    vel1 = float(row[6])
+    vel2 = float(row[7])
+    vel3 = np.sqrt(vel1**2 + vel2**2)
+    velPI.append([vel3])
+
+fig3 = plt.figure()
+ax = fig3.add_subplot(111)
+ax.plot(d2tPI, velPI, 'x', color='orange')       
+ax.set_xlabel("Distance to Target (m)")
+ax.set_ylabel("Velocity at Impact (m/s)")
+# ax.set_ylim(0, +1)
+# ax.set_xlim(-10, +10)
+ax.grid(True)
+
+
+#PID trials velocity/position plot
+scorePID = []
+d2tPID = []
+velPID = []
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
+    data5 = list(csv.reader(csvDataFile))
+    
+for row in data5:
+    scorePID.append([row[4]])
+    distance2target = float(row[6])
+    d2tPID.append(distance2target)
+    vel1 = float(row[7])
+    vel2 = float(row[8])
+    vel3 = np.sqrt(vel1**2 + vel2**2)
+    velPID.append([vel3])
+
+fig4 = plt.figure()
+ax = fig4.add_subplot(111)
+ax.plot(d2tPID, velPID, 'gx')       
+ax.set_xlabel("Distance to Target (m)")
+ax.set_ylabel("Velocity at Impact (m/s)")
+# ax.set_ylim(0, +1)
+# ax.set_xlim(-10, +10)
+ax.grid(True)
+
+fig5 = plt.figure()
+ax = fig5.add_subplot(111)
+ax.plot(d2tP, velP, 'rx')
+ax.plot(d2tPI, velPI, 'x', color='orange')
+ax.plot(d2tPID, velPID, 'gx')
+ax.set_xlabel("Distance to Target (m)")
+ax.set_ylabel("Velocity at Impact (m/s)")
+# ax.set_ylim(0, +1)
+# ax.set_xlim(-10, +10)
+ax.grid(True)
+
+
 # # PLOTTING ENERGY DRIFT
 # m = 1000.  # mass of lander in kg
 # dt = 0.1

@@ -7,10 +7,10 @@ resultsPI = []
 resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
-K_diffxlist = list(np.linspace(0.001, 0.042, 7))
-K_pxlist = list(np.linspace(0.000, 1.000, 6))
-K_ixlist = list(np.linspace(0.000, 0.010, 6))
-K_dxlist = list(np.linspace(0.000, 0.500, 6))
+K_diffxlist = list(np.linspace(0.001, 0.043, 7))
+K_pxlist = list(np.linspace(0.200, 1.000, 5))
+K_ixlist = list(np.linspace(0.002, 0.010, 5))
+K_dxlist = list(np.linspace(0.100, 0.500, 5))
 
 
 # Automated Testing (P Vertical)
@@ -50,7 +50,7 @@ for Trial in Trials:
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
-    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1]])
+    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
 
 # Sorting results by score
 results = sorted(results, key=lambda x: x[1])
@@ -67,7 +67,7 @@ with open('2D Trial Results Praw.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12])])
 
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
@@ -79,7 +79,8 @@ for i in top_fiveP:
     i[5] = '{:.3f}'.format(round(i[5], 3))
     i[7] = '{0:07.3f}'.format(round(i[7], 3))
     i[9] = '{:.3f}'.format(round(i[9], 3))
-    i[11] = str(np.round(i[11], 3))
+    i[11] = '{:.3f}'.format(round(i[11], 3))
+    i[12] = '{:.3f}'.format(round(i[12], 3))
 
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fiveP)
@@ -130,7 +131,7 @@ for Trial in Trials:
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
     resultsPI.append(["K_diffx", Trial[0], "K_px",
-                      Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1]])
+                      Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
@@ -145,7 +146,7 @@ with open('2D Trial Results PIraw.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPI:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[14])])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -157,7 +158,8 @@ for i in top_fivePI:
     i[7] = '{:.3f}'.format(round(i[7], 3))
     i[9] = '{0:07.3f}'.format(round(i[9], 3))
     i[11] = '{:.3f}'.format(round(i[11], 3))
-    i[13] = str(np.round(i[13], 3))
+    i[13] = '{:.3f}'.format(round(i[13], 3))
+    i[14] = '{:.3f}'.format(round(i[14], 3))
 
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fivePI)
@@ -210,7 +212,7 @@ for Trial in Trials:
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
     resultsPID.append(["K_diffx", Trial[0], "K_px",
-                       Trial[1], "K_ix", Trial[2], "K_dx", Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1]])
+                       Trial[1], "K_ix", Trial[2], "K_dx", Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
@@ -225,7 +227,7 @@ with open('2D Trial Results PIDraw.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[15])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[15]), str(row[16])])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
@@ -238,7 +240,8 @@ for i in top_fivePID:
     i[9] = '{:.3f}'.format(round(i[9], 3))
     i[11] = '{0:07.3f}'.format(round(i[11], 3))
     i[13] = '{:.3f}'.format(round(i[13], 3))
-    i[15] = str(np.round(i[15], 3))
+    i[15] = '{:.3f}'.format(round(i[15], 3))
+    i[16] = '{:.3f}'.format(round(i[16], 3))
 
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fivePID)

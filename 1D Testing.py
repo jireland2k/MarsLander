@@ -9,9 +9,9 @@ resultsPID = []
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
 K_hlist = list(np.linspace(0.001, 0.042, 7))
-K_plist = list(np.linspace(0.000, 1.000, 6))
-K_ilist = list(np.linspace(0.000, 0.010, 6))
-K_dlist = list(np.linspace(0.000, 0.500, 6))
+K_plist = list(np.linspace(0.200, 1.000, 5))
+K_ilist = list(np.linspace(0.002, 0.010, 5))
+K_dlist = list(np.linspace(0.100, 0.500, 5))
 
 
 # Automated Testing (P Vertical)
@@ -40,7 +40,7 @@ for Trial in Trials:
     # resultsP is for pretty printing
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsP.append(["K_h", Trial[0], "K_p",
-                     Trial[1], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
+                     Trial[1], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1]])
 
 # Sorting results by score
 results = sorted(results, key=lambda x: x[1])
@@ -106,7 +106,7 @@ for Trial in Trials:
     results.append([parameters, score(result)])
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPI.append(["K_h", Trial[0], "K_p",
-                      Trial[1], "K_i", Trial[2], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
+                      Trial[1], "K_i", Trial[2], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
@@ -172,7 +172,7 @@ for Trial in Trials:
     results.append([parameters, score(result)])
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPID.append(["K_h", Trial[0], "K_p",
-                       Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1]])
+                       Trial[1], "K_i", Trial[2], "K_d", Trial[3], "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1]])
 
 results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
