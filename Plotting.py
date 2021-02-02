@@ -3,22 +3,22 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Best Autopilot test:
 
-# Extract PID test results
-with open('1D Trial Results Praw.csv') as csvDataFile:
+# Extract P test results
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
 K_p = float(data[0][1])
-K_i = 0
-K_d = 0
+K_i = float(data[0][2])
+K_d = float(data[0][3])
 
-with open('2D Trial Results Praw.csv') as csvDataFile:
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
 K_px = float(data2[0][1])
-K_ix = 0
-K_dx = 0
+K_ix = float(data2[0][2])
+K_dx = float(data2[0][3])
 
 parameters = {'K_h': K_h,
               'K_p': K_p,
@@ -35,7 +35,8 @@ parameters = {'K_h': K_h,
 # V0 = [10., -20.]
 #Vv_init = np.random.uniform(-10, -20)
 #V0 = [0., Vv_init]
-best_autopilot = p_autopilot
+
+best_autopilot = pid_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
@@ -111,11 +112,11 @@ Actual_velocity = ax7.plot(t, Vs[:, 0], 'b-', label="Horizontal velocity (m/s)")
 landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
 hdiff = Xs[:, 0]-landtarget
 hdiffmax = np.amax(hdiff)
-if hdiffmax >= 300:
+if hdiffmax >= 1500:
     munitprefix = 1000
-elif hdiffmax >= 30:
+elif hdiffmax >= 150:
     munitprefix = 100
-elif hdiffmax >= 3:
+elif hdiffmax >= 15:
     munitprefix = 10
 else: 
     munitprefix = 1
@@ -130,8 +131,8 @@ ax7.legend(lines, labs, loc=4)
 ax7.set_xlabel("Time(s)")
 ax7.set_ylabel("Horizontal velocity (m/s)")
 ax8.set_ylabel("Horizontal acceleration (m/s^2)")
-ax7.set_ylim(-3, +3)
-ax8.set_ylim(-1, +1)
+ax7.set_ylim(-15, +15)
+ax8.set_ylim(-3, +3)
 ax7.grid(True)
 
 
@@ -156,7 +157,7 @@ for row in data3:
 
 fig2 = plt.figure()
 ax = fig2.add_subplot(111)
-ax.plot(dftP, velP, 'rx')       
+ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)       
 ax.set_xlabel("Distance from Target (m)")
 ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_ylim(0, +1)
@@ -185,7 +186,7 @@ for row in data4:
 
 fig3 = plt.figure()
 ax = fig3.add_subplot(111)
-ax.plot(dftPI, velPI, 'x', color='orange')       
+ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)       
 ax.set_xlabel("Distance from Target (m)")
 ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_ylim(0, +1)
@@ -214,7 +215,7 @@ for row in data5:
 
 fig4 = plt.figure()
 ax = fig4.add_subplot(111)
-ax.plot(dftPID, velPID, 'gx')       
+ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)       
 ax.set_xlabel("Distance from Target (m)")
 ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_ylim(0, +1)
@@ -225,9 +226,9 @@ ax.grid(True)
 #all three autpilots superposed
 fig4 = plt.figure()
 ax = fig4.add_subplot(111)
-ax.plot(dftP, velP, 'rx')
-ax.plot(dftPI, velPI, 'x', color='orange')
-ax.plot(dftPID, velPID, 'gx')       
+ax.scatter(dftP, velP,c='r', marker='.', alpha = 0.1)
+ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.2)
+ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)       
 ax.set_xlabel("Distance from Target (m)")
 ax.set_ylabel("Velocity at Impact (m/s)")
 # ax.set_ylim(0, +1)
@@ -238,9 +239,9 @@ ax.grid(True)
 for i in range(0, 360, 90):
     fig6 = plt.figure()
     ax = fig6.add_subplot(111, projection='3d')
-    ax.scatter(dftP, velP, scoreP, c='r', marker='x', depthshade=False)
-    ax.scatter(dftPI, velPI, scorePI, c='orange', marker='x', depthshade=False)
-    ax.scatter(dftPID, velPID, scorePID, c='g', marker='x', depthshade=False)
+    ax.scatter(dftP, velP, scoreP, c='r', marker='.', alpha = 0.1, depthshade=False)
+    ax.scatter(dftPI, velPI, scorePI, c='orange', marker='.', alpha = 0.2, depthshade=False)
+    ax.scatter(dftPID, velPID, scorePID, c='g', marker='.', alpha = 0.1, depthshade=False)
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.set_zlabel("Score (less is better)")
@@ -254,9 +255,9 @@ for i in range(0, 360, 90):
 for i in range(0, 360, 90):
     fig6 = plt.figure()
     ax = fig6.add_subplot(111, projection='3d')
-    ax.scatter(dftP, velP, fuelP, c='r', marker='x', depthshade=False)
-    ax.scatter(dftPI, velPI, fuelPI, c='orange', marker='x', depthshade=False)
-    ax.scatter(dftPID, velPID, fuelPID, c='g', marker='x', depthshade=False)
+    ax.scatter(dftP, velP, fuelP, c='r', marker='.', alpha = 0.1, depthshade=False)
+    ax.scatter(dftPI, velPI, fuelPI, c='orange', marker='.', alpha = 0.2, depthshade=False)
+    ax.scatter(dftPID, velPID, fuelPID, c='g', marker='.', alpha = 0.1, depthshade=False)
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.set_zlabel("Fuel used (kg)")

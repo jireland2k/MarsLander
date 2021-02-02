@@ -7,9 +7,9 @@ resultsPI = []
 resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
-K_diffxlist = list(np.linspace(0.001, 0.043, 7))
-K_pxlist = list(np.linspace(0.100, 1.000, 10))
-K_ixlist = list(np.linspace(0.001, 0.010, 10))
+K_diffxlist = list(np.linspace(0.005, 0.050, 10))
+K_pxlist = list(np.linspace(0.200, 2.000, 10))
+K_ixlist = list(np.linspace(0.002, 0.020, 10))
 K_dxlist = list(np.linspace(0.050, 0.500, 10))
 
 
