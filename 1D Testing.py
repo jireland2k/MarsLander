@@ -8,9 +8,9 @@ resultsPID = []
 
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
-K_hlist = list(np.linspace(0.005, 0.050, 10))
-K_plist = list(np.linspace(0.200, 2.000, 10))
-K_ilist = list(np.linspace(0.002, 0.020, 10))
+K_hlist = list(np.linspace(0.016, 0.030, 8))
+K_plist = list(np.linspace(0.500, 1.000, 11))
+K_ilist = list(np.linspace(0.002, 0.006, 9))
 K_dlist = list(np.linspace(0.050, 0.500, 10))
 
 
