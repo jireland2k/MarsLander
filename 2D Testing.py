@@ -8,9 +8,9 @@ resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
 K_diffxlist = list(np.linspace(0.001, 0.043, 7))
-K_pxlist = list(np.linspace(0.200, 1.000, 5))
-K_ixlist = list(np.linspace(0.002, 0.010, 5))
-K_dxlist = list(np.linspace(0.100, 0.500, 5))
+K_pxlist = list(np.linspace(0.100, 1.000, 10))
+K_ixlist = list(np.linspace(0.001, 0.010, 10))
+K_dxlist = list(np.linspace(0.050, 0.500, 10))
 
 
 # Automated Testing (P Vertical)

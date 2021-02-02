@@ -9,9 +9,9 @@ resultsPID = []
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
 K_hlist = list(np.linspace(0.001, 0.042, 7))
-K_plist = list(np.linspace(0.200, 1.000, 5))
-K_ilist = list(np.linspace(0.002, 0.010, 5))
-K_dlist = list(np.linspace(0.100, 0.500, 5))
+K_plist = list(np.linspace(0.100, 1.000, 10))
+K_ilist = list(np.linspace(0.001, 0.010, 10))
+K_dlist = list(np.linspace(0.050, 0.500, 10))
 
 
 # Automated Testing (P Vertical)
@@ -68,7 +68,7 @@ for i in top_fiveP:
     i[3] = '{:.3f}'.format(round(i[3], 3))
     i[5] = '{:.3f}'.format(round(i[5], 3))
     i[7] = '{0:07.3f}'.format(round(i[7], 3))
-    i[9] = str(np.round(i[9], 3))
+    i[9] = '{:.3f}'.format(round(i[9], 3))
 
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fiveP)
@@ -132,7 +132,8 @@ for i in top_fivePI:
     i[5] = '{:.3f}'.format(round(i[5], 3))
     i[7] = '{:.3f}'.format(round(i[7], 3))
     i[9] = '{0:07.3f}'.format(round(i[9], 3))
-    i[11] = str(np.round(i[11], 3))
+    i[11] = '{:.3f}'.format(round(i[11], 3))
+
 
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fivePI)
@@ -199,8 +200,7 @@ for i in top_fivePID:
     i[7] = '{:.3f}'.format(round(i[7], 3))
     i[9] = '{:.3f}'.format(round(i[9], 3))
     i[11] = '{0:07.3f}'.format(round(i[11], 3))
-    i[13] = str(np.round(i[13], 3))
-
+    i[13] = '{:.3f}'.format(round(i[13], 3))
 pp = pprint.PrettyPrinter(width=200)
 pp.pprint(top_fivePID)
 print()
