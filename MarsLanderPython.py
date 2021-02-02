@@ -16,7 +16,7 @@ rcParams['figure.figsize'] = (10, 8)
 
 g = 3.711  #  m/s^2, gravity on Mars
 # wind = np.random(0.000, 70)
-wind = 31 # set to 0 for 1D Testing
+wind = 70 # set to 0 for 1D Testing
 power2thrust = 1000
 dt = 0.1
 parameters = {

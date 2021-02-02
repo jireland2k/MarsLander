@@ -41,7 +41,9 @@ Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, land
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
 
+
 # Plotting target speed and actual speed
+
 c = 0.0
 h = np.array([height(land, Xs[i, :]) for i in range(len(Xs))])
 
@@ -50,10 +52,10 @@ plt.subplots_adjust(hspace=0.3, wspace=0.4)
 ax = fig.add_subplot(221)
 Actual_velocity = ax.plot(-h, Vs[:, 1], 'b-', label="Actual velocity (m/s)")
 Target_velocity = ax.plot(-h, -(c + K_h*h), 'g-',
-                          label=f"Target velocity K$_h$={K_h:.3f}")
+                        label=f"Target velocity K$_h$={K_h:.3f}")
 ax2 = ax.twinx()
 Accel_exp = ax2.plot(-h, As[:, 1], 'r-',
-                     label="Acceleration (m/s^2)")
+                    label="Acceleration (m/s^2)")
 
 lines = Actual_velocity+Target_velocity+Accel_exp
 labs = [l.get_label() for l in lines]
@@ -69,7 +71,7 @@ Fuel1 = ax3.plot(-h, fuels[:], 'm-', label="Fuel remaining (kg)")
 
 ax4 = ax3.twinx()
 Thrust1 = ax4.plot(-h, thrust[:, 1],
-                   'c-', label="Thrust (N)")
+                'c-', label="Thrust (N)")
 
 lines = Thrust1+Fuel1
 labs = [l.get_label() for l in lines]
@@ -90,10 +92,10 @@ t = np.array([dt*i for i in range(Nstep)])
 Actual_velocity = ax5.plot(
     t, Vs[:, 1], 'b-', label="Actual velocity (m/s)")
 Target_velocity = ax5.plot(t, -(c + K_h*h), 'g-',
-                           label=f"Target velocity K$_h$={K_h:.3f}")
+                        label=f"Target velocity K$_h$={K_h:.3f}")
 ax6 = ax5.twinx()
 Accel_exp = ax6.plot(t, As[:, 1], 'r-',
-                     label="Acceleration (m/s^2)")
+                    label="Acceleration (m/s^2)")
 
 lines = Actual_velocity+Target_velocity+Accel_exp
 labs = [l.get_label() for l in lines]
@@ -123,7 +125,7 @@ else:
 Hdiff = ax7.plot(t, hdiff/munitprefix, '-', color='orange', label="Horizontal position error (*"+str(munitprefix)+"m)")
 ax8 = ax7.twinx()
 Accel_exp = ax8.plot(t, As[:, 0], 'r-',
-                     label="Horizontal acceleration (m/s^2)")
+                    label="Horizontal acceleration (m/s^2)")
 
 lines = Actual_velocity+Accel_exp+Hdiff
 labs = [l.get_label() for l in lines]
@@ -136,137 +138,181 @@ ax8.set_ylim(-3, +3)
 ax7.grid(True)
 
 
-#P trials velocity/position plot
-scoreP = []
-fuelP = []
-dftP = []
-velP = []
-with open('2D Trial Results Praw.csv') as csvDataFile:
-    data3 = list(csv.reader(csvDataFile))
-    
-for row in data3:
-    scoreP.append([float(row[2])])
-    fuelusedP = 500 - float(row[3])
-    fuelP.append([fuelusedP])
-    distance_from_target = float(row[4])
-    dftP.append(distance_from_target)
-    vel1 = float(row[5])
-    vel2 = float(row[6])
-    vel3 = np.sqrt(vel1**2 + vel2**2)
-    velP.append([vel3])
+additional_plots = 1
+if additional_plots == 1:
 
-fig2 = plt.figure()
-ax = fig2.add_subplot(111)
-ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)       
-ax.set_xlabel("Distance from Target (m)")
-ax.set_ylabel("Velocity at Impact (m/s)")
-# ax.set_ylim(0, +1)
-# ax.set_xlim(-10, +10)
-ax.grid(True)
+    #P trials velocity/position plot
+    scoreP = []
+    fuelP = []
+    dftP = []
+    velP = []
+    with open('2D Trial Results Praw.csv') as csvDataFile:
+        data3 = list(csv.reader(csvDataFile))
+        
+    for row in data3:
+        scoreP.append([float(row[2])])
+        fuelusedP = 500 - float(row[3])
+        fuelP.append([fuelusedP])
+        distance_from_target = float(row[4])
+        dftP.append(distance_from_target)
+        vel1 = float(row[5])
+        vel2 = float(row[6])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velP.append([vel3])
 
-
-#PI trials velocity/position plot
-scorePI = []
-fuelPI = []
-dftPI = []
-velPI = []
-with open('2D Trial Results PIraw.csv') as csvDataFile:
-    data4 = list(csv.reader(csvDataFile))
-    
-for row in data4:
-    scorePI.append([float(row[3])])
-    fuelusedPI = 500 - float(row[4])
-    fuelPI.append([fuelusedPI])
-    distance_from_target = float(row[5])
-    dftPI.append(distance_from_target)
-    vel1 = float(row[6])
-    vel2 = float(row[7])
-    vel3 = np.sqrt(vel1**2 + vel2**2)
-    velPI.append([vel3])
-
-fig3 = plt.figure()
-ax = fig3.add_subplot(111)
-ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)       
-ax.set_xlabel("Distance from Target (m)")
-ax.set_ylabel("Velocity at Impact (m/s)")
-# ax.set_ylim(0, +1)
-# ax.set_xlim(-10, +10)
-ax.grid(True)
-
-
-#PID trials velocity/position plot
-scorePID = []
-fuelPID = []
-dftPID = []
-velPID = []
-with open('2D Trial Results PIDraw.csv') as csvDataFile:
-    data5 = list(csv.reader(csvDataFile))
-    
-for row in data5:
-    scorePID.append([float(row[4])])
-    fuelusedPID = 500 - float(row[5])
-    fuelPID.append([fuelusedPID])
-    distance_from_target = float(row[6])
-    dftPID.append(distance_from_target)
-    vel1 = float(row[7])
-    vel2 = float(row[8])
-    vel3 = np.sqrt(vel1**2 + vel2**2)
-    velPID.append([vel3])
-
-fig4 = plt.figure()
-ax = fig4.add_subplot(111)
-ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)       
-ax.set_xlabel("Distance from Target (m)")
-ax.set_ylabel("Velocity at Impact (m/s)")
-# ax.set_ylim(0, +1)
-# ax.set_xlim(-10, +10)
-ax.grid(True)
-
-
-#all three autpilots superposed
-fig4 = plt.figure()
-ax = fig4.add_subplot(111)
-ax.scatter(dftP, velP,c='r', marker='.', alpha = 0.1)
-ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.2)
-ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)       
-ax.set_xlabel("Distance from Target (m)")
-ax.set_ylabel("Velocity at Impact (m/s)")
-# ax.set_ylim(0, +1)
-# ax.set_xlim(-10, +10)
-ax.grid(True)
-
-
-for i in range(0, 360, 90):
-    fig6 = plt.figure()
-    ax = fig6.add_subplot(111, projection='3d')
-    ax.scatter(dftP, velP, scoreP, c='r', marker='.', alpha = 0.1, depthshade=False)
-    ax.scatter(dftPI, velPI, scorePI, c='orange', marker='.', alpha = 0.2, depthshade=False)
-    ax.scatter(dftPID, velPID, scorePID, c='g', marker='.', alpha = 0.1, depthshade=False)
+    fig2 = plt.figure()
+    ax = fig2.add_subplot(111)
+    ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)       
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
-    ax.set_zlabel("Score (less is better)")
-    #ax.set_ylim(0, +5)
-    #ax.set_xlim(-10, +10)
     ax.grid(True)
-    ax.view_init(elev=0, azim = i)
-    plt.show()
 
 
-for i in range(0, 360, 90):
-    fig6 = plt.figure()
-    ax = fig6.add_subplot(111, projection='3d')
-    ax.scatter(dftP, velP, fuelP, c='r', marker='.', alpha = 0.1, depthshade=False)
-    ax.scatter(dftPI, velPI, fuelPI, c='orange', marker='.', alpha = 0.2, depthshade=False)
-    ax.scatter(dftPID, velPID, fuelPID, c='g', marker='.', alpha = 0.1, depthshade=False)
+    #PI trials velocity/position plot
+    scorePI = []
+    fuelPI = []
+    dftPI = []
+    velPI = []
+    with open('2D Trial Results PIraw.csv') as csvDataFile:
+        data4 = list(csv.reader(csvDataFile))
+        
+    for row in data4:
+        scorePI.append([float(row[3])])
+        fuelusedPI = 500 - float(row[4])
+        fuelPI.append([fuelusedPI])
+        distance_from_target = float(row[5])
+        dftPI.append(distance_from_target)
+        vel1 = float(row[6])
+        vel2 = float(row[7])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velPI.append([vel3])
+
+    fig3 = plt.figure()
+    ax = fig3.add_subplot(111)
+    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)       
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
-    ax.set_zlabel("Fuel used (kg)")
-    #ax.set_ylim(0, +5)
-    #ax.set_xlim(-10, +10)
     ax.grid(True)
-    ax.view_init(elev=0, azim = i)
-    plt.show()
 
+
+    #PID trials velocity/position plot
+    scorePID = []
+    fuelPID = []
+    dftPID = []
+    velPID = []
+    with open('2D Trial Results PIDraw.csv') as csvDataFile:
+        data5 = list(csv.reader(csvDataFile))
+        
+    for row in data5:
+        scorePID.append([float(row[4])])
+        fuelusedPID = 500 - float(row[5])
+        fuelPID.append([fuelusedPID])
+        distance_from_target = float(row[6])
+        dftPID.append(distance_from_target)
+        vel1 = float(row[7])
+        vel2 = float(row[8])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velPID.append([vel3])
+
+    fig4 = plt.figure()
+    ax = fig4.add_subplot(111)
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+
+    #all three autpilots superposed
+
+    #vel/dis
+    fig5 = plt.figure()
+    ax = fig5.add_subplot(111)
+    ax.scatter(dftP, velP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+    #score/dis
+    fig6 = plt.figure()
+    ax = fig6.add_subplot(111)
+    ax.scatter(dftP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+    #score/vel
+    fig7 = plt.figure()
+    ax = fig7.add_subplot(111)
+    ax.scatter(velP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(velPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(velPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Velocity at Impact (m/s)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+    #fuel/vel
+    fig8 = plt.figure()
+    ax = fig8.add_subplot(111)
+    ax.scatter(velP, fuelP, c='r', marker='.', alpha = 0.1)
+    ax.scatter(velPI, fuelPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(velPID, fuelPID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Velocity at Impact (m/s)")
+    ax.set_ylabel("Fuel used (kg)")
+    ax.grid(True)
+
+    #fuel/dis
+    fig9 = plt.figure()
+    ax = fig9.add_subplot(111)
+    ax.scatter(dftP, fuelP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, fuelPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, fuelPID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Fuel used (kg)")
+    ax.grid(True)
+
+    #score/fuel
+    fig10 = plt.figure()
+    ax = fig10.add_subplot(111)
+    ax.scatter(fuelP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(fuelPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(fuelPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.set_xlabel("Fuel used (kg)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+
+    # for i in range(0, 360, 90):
+    #     fig6 = plt.figure()
+    #     ax = fig6.add_subplot(111, projection='3d')
+    #     ax.scatter(dftP, velP, scoreP, c='r', marker='.', alpha = 0.1, depthshade=False)
+    #     ax.scatter(dftPI, velPI, scorePI, c='orange', marker='.', alpha = 0.2, depthshade=False)
+    #     ax.scatter(dftPID, velPID, scorePID, c='g', marker='.', alpha = 0.1, depthshade=False)
+    #     ax.set_xlabel("Distance from Target (m)")
+    #     ax.set_ylabel("Velocity at Impact (m/s)")
+    #     ax.set_zlabel("Score (less is better)")
+    #     ax.grid(True)
+    #     ax.view_init(elev=0, azim = i)
+    #     plt.show()
+
+
+    # for i in range(0, 360, 90):
+    #     fig7 = plt.figure()
+    #     ax = fig7.add_subplot(111, projection='3d')
+    #     ax.scatter(dftP, velP, fuelP, c='r', marker='.', alpha = 0.1, depthshade=False)
+    #     ax.scatter(dftPI, velPI, fuelPI, c='orange', marker='.', alpha = 0.2, depthshade=False)
+    #     ax.scatter(dftPID, velPID, fuelPID, c='g', marker='.', alpha = 0.1, depthshade=False)
+    #     ax.set_xlabel("Distance from Target (m)")
+    #     ax.set_ylabel("Velocity at Impact (m/s)")
+    #     ax.set_zlabel("Fuel used (kg)")
+    #     ax.grid(True)
+    #     ax.view_init(elev=0, azim = i)
+    #     plt.show()
+else:
+    print("Done!")
 
 # # PLOTTING ENERGY DRIFT
 # m = 1000.  # mass of lander in kg
