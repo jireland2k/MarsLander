@@ -169,8 +169,10 @@ best_autopilot = pid_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X5=Xs
+Xz=[X1, X2, X3, X4, X5]
 thrust5=thrust
-plot_lander(land, landing_site, X1, X2, X3, X4, X5, thrust1, thrust2, thrust3, thrust4, thrust5, animate=True, step=10)
+thrustz=[thrust1, thrust2, thrust3, thrust4, thrust5]
+plot_lander(land, landing_site, Xz, thrustz, animate=True, step=10)
 
 
 # Plotting target speed and actual speed
