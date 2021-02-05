@@ -75,22 +75,60 @@ def plot_surface(land, landing_site):
     return ax
 
 
-def plot_lander(land, landing_site, X, thrust=None, animate=False, step=10):
+def plot_lander(land, landing_site, X1, X2, X3, X4, X5, thrust1=None, thrust2=None, thrust3=None, thrust4=None, thrust5=None, animate=False, step=10):
+    poshist = [len(X1), len(X2), len(X3), len(X4), len(X5)]
+    plotlen = np.amax(poshist)
     if animate:
-        def plot_frame(n=len(X)-1):
+        def plot_frame(n=plotlen-1):
             ax = plot_surface(land, landing_site)
-            ax.plot(X[:n, 0], X[:n, 1], 'b--')
-            ax.plot(X[n, 0], X[n, 1], 'b^', ms=20)
-            if thrust is not None:
-                ax.plot([X[n, 0], X[n, 0] - 100/power2thrust*thrust[n, 0]],
-                        [X[n, 1] - 100., X[n, 1] - 100. -
-                            100/power2thrust*thrust[n, 1]],
-                        'r-', lw=10)
-        return interactive(plot_frame, n=(0, len(X), step))
+            ax.plot(X1[:n, 0], X1[:n, 1], 'b--')
+            ax.plot(X2[:n, 0], X2[:n, 1], 'r--')
+            ax.plot(X3[:n, 0], X3[:n, 1], 'g--')
+            ax.plot(X4[:n, 0], X4[:n, 1], 'k--')
+            ax.plot(X5[:n, 0], X5[:n, 1], 'y--')
+            ax.plot(X1[n, 0], X1[n, 1], 'b^', ms=20)
+            ax.plot(X2[n, 0], X2[n, 1], 'r^', ms=20)
+            ax.plot(X3[n, 0], X3[n, 1], 'g^', ms=20)
+            ax.plot(X4[n, 0], X4[n, 1], 'k^', ms=20)
+            ax.plot(X5[n, 0], X5[n, 1], 'y^', ms=20)
+            if thrust1 is not None:
+                ax.plot([X1[n, 0], X1[n, 0] - 100/power2thrust*thrust1[n, 0]],
+                        [X1[n, 1] - 100., X1[n, 1] - 100. -
+                            100/power2thrust*thrust1[n, 1]],
+                        'b-', alpha=0.3, lw=10)
+            if thrust2 is not None:
+                ax.plot([X2[n, 0], X2[n, 0] - 100/power2thrust*thrust2[n, 0]],
+                        [X2[n, 1] - 100., X2[n, 1] - 100. -
+                            100/power2thrust*thrust2[n, 1]],
+                        'r-', alpha=0.3, lw=10)
+            if thrust3 is not None:
+                ax.plot([X3[n, 0], X3[n, 0] - 100/power2thrust*thrust3[n, 0]],
+                        [X3[n, 1] - 100., X3[n, 1] - 100. -
+                            100/power2thrust*thrust3[n, 1]],
+                        'g-', alpha=0.3, lw=10)
+            if thrust4 is not None:
+                ax.plot([X4[n, 0], X4[n, 0] - 100/power2thrust*thrust4[n, 0]],
+                        [X4[n, 1] - 100., X4[n, 1] - 100. -
+                            100/power2thrust*thrust4[n, 1]],
+                        'k-', alpha=0.3, lw=10)
+            if thrust5 is not None:
+                ax.plot([X5[n, 0], X5[n, 0] - 100/power2thrust*thrust5[n, 0]],
+                        [X5[n, 1] - 100., X5[n, 1] - 100. -
+                            100/power2thrust*thrust5[n, 1]],
+                        'y-', alpha=0.3, lw=10)
+        return interactive(plot_frame, n=(0, plotlen, step))
     else:
         ax = plot_surface(land, landing_site)
-        ax.plot(X[:, 0], X[:, 1], 'b--')
-        ax.plot(X[-1, 0], X[-1, 1], 'b^')
+        ax.plot(X1[:, 0], X1[:, 1], 'b--')
+        ax.plot(X2[:, 0], X2[:, 1], 'r--')
+        ax.plot(X3[:, 0], X3[:, 1], 'g--')
+        ax.plot(X4[:, 0], X4[:, 1], 'k--')
+        ax.plot(X5[:, 0], X5[:, 1], 'y--')
+        ax.plot(X1[-1, 0], X1[-1, 1], 'b^')
+        ax.plot(X2[-1, 0], X2[-1, 1], 'r^')
+        ax.plot(X3[-1, 0], X3[-1, 1], 'g^')
+        ax.plot(X4[-1, 0], X4[-1, 1], 'k^')
+        ax.plot(X5[-1, 0], X5[-1, 1], 'y^')
         return ax
 
 

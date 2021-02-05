@@ -3,7 +3,75 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Best Autopilot test:
 
-# Extract P test results
+# Extract best P test result
+with open('1D Trial Results Praw.csv') as csvDataFile:
+    data = list(csv.reader(csvDataFile))
+
+K_h = float(data[0][0])
+K_p = float(data[0][1])
+K_i = 0
+K_d = 0
+
+with open('2D Trial Results Praw.csv') as csvDataFile:
+    data2 = list(csv.reader(csvDataFile))
+
+K_diffx = float(data2[0][0])
+K_px = float(data2[0][1])
+K_ix = 0
+K_dx = 0
+
+parameters = {'K_h': K_h,
+              'K_p': K_p,
+              'K_i': K_i,
+              'K_d': K_d,
+              'K_diffx': K_diffx,
+              'K_px': K_px,
+              'K_ix': K_ix,
+              'K_dx': K_dx,}
+
+best_autopilot = p_autopilot
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                                      autopilot=best_autopilot, fuel=500, parameters=parameters)
+X1=Xs
+thrust1=thrust
+
+
+# Extract best PI test result
+
+with open('1D Trial Results PIraw.csv') as csvDataFile:
+    data = list(csv.reader(csvDataFile))
+
+K_h = float(data[0][0])
+K_p = float(data[0][1])
+K_i = float(data[0][2])
+K_d = 0
+
+with open('2D Trial Results PIraw.csv') as csvDataFile:
+    data2 = list(csv.reader(csvDataFile))
+
+K_diffx = float(data2[0][0])
+K_px = float(data2[0][1])
+K_ix = float(data2[0][2])
+K_dx = 0
+
+parameters = {'K_h': K_h,
+              'K_p': K_p,
+              'K_i': K_i,
+              'K_d': K_d,
+              'K_diffx': K_diffx,
+              'K_px': K_px,
+              'K_ix': K_ix,
+              'K_dx': K_dx,}
+
+best_autopilot = pi_autopilot
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                                      autopilot=best_autopilot, fuel=500, parameters=parameters)
+X2=Xs
+thrust2=thrust
+
+
+# Extract best PID test result
+
 with open('1D Trial Results PIDraw.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
@@ -29,17 +97,80 @@ parameters = {'K_h': K_h,
               'K_ix': K_ix,
               'K_dx': K_dx,}
 
+best_autopilot = pid_autopilot
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                                      autopilot=best_autopilot, fuel=500, parameters=parameters)
+X3=Xs
+thrust3=thrust
 
-# Plotting the best score trial
-# X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+500, 3000]
-# V0 = [10., -20.]
-#Vv_init = np.random.uniform(-10, -20)
-#V0 = [0., Vv_init]
+
+# Extract 500th best PID test result
+
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
+    data = list(csv.reader(csvDataFile))
+
+K_h = float(data[500][0])
+K_p = float(data[500][1])
+K_i = float(data[500][2])
+K_d = float(data[500][3])
+
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
+    data2 = list(csv.reader(csvDataFile))
+
+K_diffx = float(data2[500][0])
+K_px = float(data2[500][1])
+K_ix = float(data2[500][2])
+K_dx = float(data2[500][3])
+
+parameters = {'K_h': K_h,
+              'K_p': K_p,
+              'K_i': K_i,
+              'K_d': K_d,
+              'K_diffx': K_diffx,
+              'K_px': K_px,
+              'K_ix': K_ix,
+              'K_dx': K_dx,}
 
 best_autopilot = pid_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
-plot_lander(land, landing_site, Xs, thrust, animate=True, step=10)
+X4=Xs
+thrust4=thrust
+
+
+# Extract 3000th best PID test result
+
+with open('1D Trial Results PIDraw.csv') as csvDataFile:
+    data = list(csv.reader(csvDataFile))
+
+K_h = float(data[3000][0])
+K_p = float(data[3000][1])
+K_i = float(data[3000][2])
+K_d = float(data[3000][3])
+
+with open('2D Trial Results PIDraw.csv') as csvDataFile:
+    data2 = list(csv.reader(csvDataFile))
+
+K_diffx = float(data2[3000][0])
+K_px = float(data2[3000][1])
+K_ix = float(data2[3000][2])
+K_dx = float(data2[3000][3])
+
+parameters = {'K_h': K_h,
+              'K_p': K_p,
+              'K_i': K_i,
+              'K_d': K_d,
+              'K_diffx': K_diffx,
+              'K_px': K_px,
+              'K_ix': K_ix,
+              'K_dx': K_dx,}
+
+best_autopilot = pid_autopilot
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+                                                      autopilot=best_autopilot, fuel=500, parameters=parameters)
+X5=Xs
+thrust5=thrust
+plot_lander(land, landing_site, X1, X2, X3, X4, X5, thrust1, thrust2, thrust3, thrust4, thrust5, animate=True, step=10)
 
 
 # Plotting target speed and actual speed
@@ -222,7 +353,7 @@ if additional_plots == 1:
     ax.grid(True)
 
 
-    #all three autpilots superposed
+    #all three autopilots superposed
 
     #vel/dis
     fig5 = plt.figure()
@@ -284,57 +415,5 @@ if additional_plots == 1:
     ax.set_ylabel("Score (less is better)")
     ax.grid(True)
 
-
-    # for i in range(0, 360, 90):
-    #     fig6 = plt.figure()
-    #     ax = fig6.add_subplot(111, projection='3d')
-    #     ax.scatter(dftP, velP, scoreP, c='r', marker='.', alpha = 0.1, depthshade=False)
-    #     ax.scatter(dftPI, velPI, scorePI, c='orange', marker='.', alpha = 0.2, depthshade=False)
-    #     ax.scatter(dftPID, velPID, scorePID, c='g', marker='.', alpha = 0.1, depthshade=False)
-    #     ax.set_xlabel("Distance from Target (m)")
-    #     ax.set_ylabel("Velocity at Impact (m/s)")
-    #     ax.set_zlabel("Score (less is better)")
-    #     ax.grid(True)
-    #     ax.view_init(elev=0, azim = i)
-    #     plt.show()
-
-
-    # for i in range(0, 360, 90):
-    #     fig7 = plt.figure()
-    #     ax = fig7.add_subplot(111, projection='3d')
-    #     ax.scatter(dftP, velP, fuelP, c='r', marker='.', alpha = 0.1, depthshade=False)
-    #     ax.scatter(dftPI, velPI, fuelPI, c='orange', marker='.', alpha = 0.2, depthshade=False)
-    #     ax.scatter(dftPID, velPID, fuelPID, c='g', marker='.', alpha = 0.1, depthshade=False)
-    #     ax.set_xlabel("Distance from Target (m)")
-    #     ax.set_ylabel("Velocity at Impact (m/s)")
-    #     ax.set_zlabel("Fuel used (kg)")
-    #     ax.grid(True)
-    #     ax.view_init(elev=0, azim = i)
-    #     plt.show()
 else:
     print("Done!")
-
-# # PLOTTING ENERGY DRIFT
-# m = 1000.  # mass of lander in kg
-# dt = 0.1
-# X0 = [(land[landing_site+1, 0] + land[landing_site, 0]) // 2, 3000]
-# V0 = [0., Vv_init]
-# # number of steps required for 1 second of simulated time
-# Nstep = int((1.0 / dt) + 1)
-# Xs, Vs, thrust, success = simulate(
-#     X0, V0, land, landing_site, dt=dt, Nstep=Nstep)
-
-# t = np.array([dt*i for i in range(Nstep)])
-# V = np.array([m*g*Xs[i, 1] for i in range(Nstep)])
-# T = np.array([0.5*m*norm(Vs[i, :])**2 for i in range(Nstep)])
-# E = T + V
-
-# fig, ax = plt.subplots()
-# ax.plot(t, abs(E - E[0])/E[0], label="Total energy drift")
-# ax.set_xlabel('Time / s')
-# ax.set_ylabel('Energy drift')
-# ax.legend()
-# assert t[0] == 0.0
-# assert t[-1] >= 1.0
-# assert len(t) == len(E) == Nstep
-# assert abs(E[-1] - E[0])/E[0] < 1e-3
