@@ -1,22 +1,21 @@
 from MarsLanderPython import *
 
 # Result storage variables
-results = []
 resultsP = []
 resultsPI = []
 resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
 K_diffxlist = list(np.linspace(0.005, 0.050, 10))
-K_pxlist = list(np.linspace(0.200, 0.800, 13))
-K_ixlist = list(np.linspace(0.002, 0.010, 9))
+K_pxlist = list(np.linspace(0.200, 2.000, 10))
+K_ixlist = list(np.linspace(0.002, 0.020, 10))
 K_dxlist = list(np.linspace(0.050, 0.500, 10))
 
 
 # Automated Testing (P Vertical)
 
 # Extract 1D P test results
-with open('1D Trial Results Praw.csv') as csvDataFile:
+with open('1D Trial Results P.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -25,7 +24,8 @@ K_p = float(data[0][1])
 
 print("Initialising 2D proportional autopilot testing:")
 print()
-print("The ideal tuning parameters from 1D test used in this test are: K_h: " + '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)))
+print("The ideal tuning parameters from 1D test used in this test are: K_h: " + 
+      '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)))
 print()
 start_time = time.clock()
 
@@ -44,30 +44,24 @@ for Trial in Trials:
     }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=p_autopilot, fuel=500, parameters=parameters)
-    results.append([parameters, score(result)])
 
     # resultsP is for pretty printing
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
-    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
+    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), 
+                     "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, 
+                     "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", success])
 
 # Sorting results by score
-results = sorted(results, key=lambda x: x[1])
 resultsP = sorted(resultsP, key=lambda x: x[5])
 
-# Writing results to CSV with the parameters explicitly stated
-with open('2D Trial Results P.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
-    for row in results:
-        writer.writerow([json.dumps(row[0]), str(row[1])])
-
 # Writing results to CSV with just values of each parameter, the score, and fuel remaining for each trial
-with open('2D Trial Results Praw.csv', 'w', newline='') as csvfile:
+with open('2D Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12]), str(row[14])])
 
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
@@ -95,7 +89,7 @@ print("\n")
 # Automated Testing (PI Vertical)
 
 # Extract 1D PI test results
-with open('1D Trial Results PIraw.csv') as csvDataFile:
+with open('1D Trial Results PI.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -105,7 +99,9 @@ K_i = float(data[0][2])
 
 print("Initialising proportional-integral autopilot testing:")
 print()
-print("The ideal tuning parameters from 1D test used in this test are: K_h: " + '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)) + ", " + "K_i: " + '{:.3f}'.format(round(K_i, 3)))
+print("The ideal tuning parameters from 1D test used in this test are: K_h: " +
+      '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)) + 
+      ", " + "K_i: " + '{:.3f}'.format(round(K_i, 3)))
 print()
 
 start_time = time.clock()
@@ -126,27 +122,21 @@ for Trial in Trials:
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
-    results.append([parameters, score(result)])
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
     resultsPI.append(["K_diffx", Trial[0], "K_px",
-                      Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
+                      Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", 
+                      fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], 
+                      Vs[-1][1], "Success", success])
 
-results = sorted(results, key=lambda x: x[1])
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
-
 
 with open('2D Trial Results PI.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    for row in results:
-        writer.writerow([json.dumps(row[0]), str(row[1])])
-
-with open('2D Trial Results PIraw.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
     for row in resultsPI:
-        writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[14])])
+        writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
+                         str(row[11]), str(row[13]), str(row[14]), str(row[16])])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -174,7 +164,7 @@ print("\n")
 # Automated Testing (PID Vertical)
 
 # Extract 1D PI test results
-with open('1D Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PID.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -183,7 +173,9 @@ K_i = float(data[0][2])
 K_d = float(data[0][3])
 print("Initialising proportional-integral-derivative autopilot testing:")
 print()
-print("The ideal tuning parameters from 1D test used in this test are: K_h: " + '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)) + ", " + "K_i: " + '{:.3f}'.format(round(K_i, 3)) + ", " + "K_d: " + '{:.3f}'.format(round(K_d, 3)))
+print("The ideal tuning parameters from 1D test used in this test are: K_h: " + 
+      '{:.3f}'.format(round(K_h, 3)) + ", " + "K_p: " + '{:.3f}'.format(round(K_p, 3)) + ", " + 
+      "K_i: " + '{:.3f}'.format(round(K_i, 3)) + ", " + "K_d: " + '{:.3f}'.format(round(K_d, 3)))
 print()
 
 start_time = time.clock()
@@ -207,27 +199,22 @@ for Trial in Trials:
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pid_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
-    results.append([parameters, score(result)])
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
-    resultsPID.append(["K_diffx", Trial[0], "K_px",
-                       Trial[1], "K_ix", Trial[2], "K_dx", Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1]])
+    resultsPID.append(["K_diffx", Trial[0], "K_px", Trial[1], "K_ix", Trial[2], "K_dx", 
+                       Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], 
+                       "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1], 
+                       "Success", success])
 
-results = sorted(results, key=lambda x: x[1])
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
 
 with open('2D Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    for row in results:
-        writer.writerow([json.dumps(row[0]), str(row[1])])
-
-with open('2D Trial Results PIDraw.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
     for row in resultsPID:
-        writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[15]), str(row[16])])
+        writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
+                         str(row[11]), str(row[13]), str(row[15]), str(row[16]), str(row[18])])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()

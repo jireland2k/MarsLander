@@ -199,6 +199,9 @@ def simulate(X0, V0, land, landing_site,
                 # print(
                 #     "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
                 pass
+            elif abs(horizontal_diff(land, X)) > 100:
+                #print("Crash! Did not land within 100m of target!")
+                pass
             else:
                 # print("Safe landing - Well done!")
                 success = True

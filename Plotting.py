@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # Best Autopilot test:
 
 # Extract best P test result
-with open('1D Trial Results Praw.csv') as csvDataFile:
+with open('1D Trial Results P.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -12,7 +12,7 @@ K_p = float(data[0][1])
 K_i = 0
 K_d = 0
 
-with open('2D Trial Results Praw.csv') as csvDataFile:
+with open('2D Trial Results P.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
@@ -38,7 +38,7 @@ thrust1=thrust
 
 # Extract best PI test result
 
-with open('1D Trial Results PIraw.csv') as csvDataFile:
+with open('1D Trial Results PI.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -46,7 +46,7 @@ K_p = float(data[0][1])
 K_i = float(data[0][2])
 K_d = 0
 
-with open('2D Trial Results PIraw.csv') as csvDataFile:
+with open('2D Trial Results PI.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
@@ -64,7 +64,7 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = pi_autopilot
-Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X2=Xs
 thrust2=thrust
@@ -72,7 +72,7 @@ thrust2=thrust
 
 # Extract best PID test result
 
-with open('1D Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PID.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
@@ -80,7 +80,7 @@ K_p = float(data[0][1])
 K_i = float(data[0][2])
 K_d = float(data[0][3])
 
-with open('2D Trial Results PIDraw.csv') as csvDataFile:
+with open('2D Trial Results PID.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
@@ -98,7 +98,7 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = pid_autopilot
-Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X3=Xs
 thrust3=thrust
@@ -106,7 +106,7 @@ thrust3=thrust
 
 # Extract 500th best PID test result
 
-with open('1D Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PID.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[500][0])
@@ -114,7 +114,7 @@ K_p = float(data[500][1])
 K_i = float(data[500][2])
 K_d = float(data[500][3])
 
-with open('2D Trial Results PIDraw.csv') as csvDataFile:
+with open('2D Trial Results PID.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[500][0])
@@ -132,7 +132,7 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = pid_autopilot
-Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X4=Xs
 thrust4=thrust
@@ -140,7 +140,7 @@ thrust4=thrust
 
 # Extract 3000th best PID test result
 
-with open('1D Trial Results PIDraw.csv') as csvDataFile:
+with open('1D Trial Results PID.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[3000][0])
@@ -148,7 +148,7 @@ K_p = float(data[3000][1])
 K_i = float(data[3000][2])
 K_d = float(data[3000][3])
 
-with open('2D Trial Results PIDraw.csv') as csvDataFile:
+with open('2D Trial Results PID.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[3000][0])
@@ -166,7 +166,7 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = pid_autopilot
-Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X5=Xs
 Xz=[X1, X2, X3, X4, X5]
@@ -255,7 +255,8 @@ elif hdiffmax >= 15:
     munitprefix = 10
 else: 
     munitprefix = 1
-Hdiff = ax7.plot(t, hdiff/munitprefix, '-', color='orange', label="Horizontal position error (*"+str(munitprefix)+"m)")
+Hdiff = ax7.plot(t, hdiff/munitprefix, '-', color='orange', 
+                 label="Horizontal position error (*"+str(munitprefix)+"m)")
 ax8 = ax7.twinx()
 Accel_exp = ax8.plot(t, As[:, 0], 'r-',
                     label="Horizontal acceleration (m/s^2)")
@@ -271,15 +272,15 @@ ax8.set_ylim(-3, +3)
 ax7.grid(True)
 
 
-additional_plots = 1
-if additional_plots == 1:
+additional_plots = True
+if additional_plots == True:
 
     #P trials velocity/position plot
     scoreP = []
     fuelP = []
     dftP = []
     velP = []
-    with open('2D Trial Results Praw.csv') as csvDataFile:
+    with open('2D Trial Results P.csv') as csvDataFile:
         data3 = list(csv.reader(csvDataFile))
         
     for row in data3:
@@ -306,7 +307,7 @@ if additional_plots == 1:
     fuelPI = []
     dftPI = []
     velPI = []
-    with open('2D Trial Results PIraw.csv') as csvDataFile:
+    with open('2D Trial Results PI.csv') as csvDataFile:
         data4 = list(csv.reader(csvDataFile))
         
     for row in data4:
@@ -333,7 +334,7 @@ if additional_plots == 1:
     fuelPID = []
     dftPID = []
     velPID = []
-    with open('2D Trial Results PIDraw.csv') as csvDataFile:
+    with open('2D Trial Results PID.csv') as csvDataFile:
         data5 = list(csv.reader(csvDataFile))
         
     for row in data5:
@@ -416,6 +417,6 @@ if additional_plots == 1:
     ax.set_xlabel("Fuel used (kg)")
     ax.set_ylabel("Score (less is better)")
     ax.grid(True)
-
+    print("Done!")
 else:
     print("Done!")
