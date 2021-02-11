@@ -1,6 +1,36 @@
 from MarsLanderPython import *
 from mpl_toolkits.mplot3d import Axes3D
 
+#Success Statistics
+#P
+with open('2D Trial Results P.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][7])
+print(str(succ) + " successful parameter combinations out of " + str(testlength) + " in P optimisation")
+
+#PI
+with open('2D Trial Results PI.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][8])
+print(str(succ) + " successful parameter combinations out of " + str(testlength) + " in PI optimisation")
+
+#PID
+with open('2D Trial Results PID.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][9])
+print(str(succ) + " successful parameter combinations out of " + str(testlength) + " in PID optimisation")
 
 # Extract best PID test result
 
@@ -32,8 +62,6 @@ parameters = {'K_h': K_h,
 best_autopilot = pid_autopilot
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
-X3=Xs
-thrust3=thrust
 
 
 # Plotting target speed and actual speed
@@ -54,6 +82,7 @@ Accel_exp = ax2.plot(-h, As[:, 1], 'r-',
 lines = Actual_velocity+Target_velocity+Accel_exp
 labs = [l.get_label() for l in lines]
 ax.legend(lines, labs, loc=0)
+fig.suptitle("Optimal PID Autopilot Flight Data")
 ax.set_xlabel("-Altitude (m)")
 ax.set_ylabel("Vertical velocity (m/s)")
 ax2.set_ylabel("Vertical acceleration (m/s^2)")

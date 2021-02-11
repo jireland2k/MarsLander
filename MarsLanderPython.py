@@ -12,11 +12,11 @@ from numpy.linalg import norm
 from ipywidgets import interactive
 from matplotlib import rcParams
 
+from Input import wind, hoffset, VXinit, VYinit, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4
+
 rcParams['figure.figsize'] = (10, 8)
 
-g = 3.711  #  m/s^2, gravity on Mars
-# wind = np.random(0.000, 70)
-wind = 31 # set to 0 for 1D Testing
+g = 3.711
 power2thrust = 1000
 dt = 0.1
 parameters = {
@@ -187,7 +187,7 @@ def simulate(X0, V0, land, landing_site,
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
                 # print("Crash! did not land on flat ground!")
                 pass
-            elif abs(rotate) > 5:  # Degrees
+            elif abs(rotate) > 10:  # Degrees
                 # print(
                 #     "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
                 pass
@@ -323,6 +323,6 @@ def score(result):
     return (velocity_bias * np.sqrt(Vs[-1][1]**2 + Vs[-1][0]**2)) + (position_bias * np.abs(hdiff)) + (fuel_use_bias * (500-fuels[-1]))
 
 # Initial Lander Kinematics
-X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+500, 3000] # remove additional x term (outside the brackets) for 1D Testing
-V0 = [10., -20., ] # set to [0, -20] for 1D Testing
+X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+hoffset, 3000] # remove additional x term (outside the brackets) for 1D Testing
+V0 = [VXinit, VYinit] # set to [0, -20] for 1D Testing
 A0 = [0.000, -g]

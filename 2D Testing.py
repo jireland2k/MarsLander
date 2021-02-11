@@ -6,10 +6,10 @@ resultsPI = []
 resultsPID = []
 
 # Generating parameter range (a, b...) and number of equally spaced values (c) within the range 
-K_diffxlist = list(np.linspace(0.005, 0.050, 10))
-K_pxlist = list(np.linspace(0.200, 2.000, 10))
-K_ixlist = list(np.linspace(0.002, 0.020, 10))
-K_dxlist = list(np.linspace(0.050, 0.500, 10))
+K_diffxlist = list(np.linspace(a1, b1, c1))
+K_pxlist = list(np.linspace(a2, b2, c2))
+K_ixlist = list(np.linspace(a3, b3, c3))
+K_dxlist = list(np.linspace(a4, b4, c4))
 
 
 # Automated Testing (P Vertical)
@@ -51,7 +51,7 @@ for Trial in Trials:
     hdifffinal = Xs[-1][0]-landtarget
     resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), 
                      "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, 
-                     "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", success])
+                     "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", int(success)])
 
 # Sorting results by score
 resultsP = sorted(resultsP, key=lambda x: x[5])
@@ -61,7 +61,7 @@ with open('2D Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12]), str(row[14])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12]), row[14]])
 
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
@@ -76,7 +76,7 @@ for i in top_fiveP:
     i[11] = '{:.3f}'.format(round(i[11], 3))
     i[12] = '{:.3f}'.format(round(i[12], 3))
 
-pp = pprint.PrettyPrinter(width=200)
+pp = pprint.PrettyPrinter(width=250)
 pp.pprint(top_fiveP)
 print()
 
@@ -128,7 +128,7 @@ for Trial in Trials:
     resultsPI.append(["K_diffx", Trial[0], "K_px",
                       Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", 
                       fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], 
-                      Vs[-1][1], "Success", success])
+                      Vs[-1][1], "Success", int(success)])
 
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
 
@@ -136,7 +136,7 @@ with open('2D Trial Results PI.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPI:
         writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
-                         str(row[11]), str(row[13]), str(row[14]), str(row[16])])
+                         str(row[11]), str(row[13]), str(row[14]), row[16]])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -151,7 +151,7 @@ for i in top_fivePI:
     i[13] = '{:.3f}'.format(round(i[13], 3))
     i[14] = '{:.3f}'.format(round(i[14], 3))
 
-pp = pprint.PrettyPrinter(width=200)
+pp = pprint.PrettyPrinter(width=250)
 pp.pprint(top_fivePI)
 print()
 
@@ -205,7 +205,7 @@ for Trial in Trials:
     resultsPID.append(["K_diffx", Trial[0], "K_px", Trial[1], "K_ix", Trial[2], "K_dx", 
                        Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], 
                        "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1], 
-                       "Success", success])
+                       "Success", int(success)])
 
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
@@ -214,7 +214,7 @@ with open('2D Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
-                         str(row[11]), str(row[13]), str(row[15]), str(row[16]), str(row[18])])
+                         str(row[11]), str(row[13]), str(row[15]), str(row[16]), row[18]])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
@@ -230,7 +230,7 @@ for i in top_fivePID:
     i[15] = '{:.3f}'.format(round(i[15], 3))
     i[16] = '{:.3f}'.format(round(i[16], 3))
 
-pp = pprint.PrettyPrinter(width=200)
+pp = pprint.PrettyPrinter(width=250)
 pp.pprint(top_fivePID)
 print()
 trial_time = time.clock() - start_time

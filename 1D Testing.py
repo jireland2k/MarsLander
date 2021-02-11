@@ -7,10 +7,10 @@ resultsPID = []
 
 # Generating parameter range (a, b) and number of equally spaced values within the range (c)
 # first number on linspace must not be 0 otherwise is not height dependent (the lander hovers)
-K_hlist = list(np.linspace(0.005, 0.050, 10))
-K_plist = list(np.linspace(0.200, 2.000, 10))
-K_ilist = list(np.linspace(0.002, 0.020, 10))
-K_dlist = list(np.linspace(0.050, 0.500, 10))
+K_hlist = list(np.linspace(a1, b1, c1))
+K_plist = list(np.linspace(a2, b2, c2))
+K_ilist = list(np.linspace(a3, b3, c3))
+K_dlist = list(np.linspace(a4, b4, c4))
 
 
 # Automated Testing (P Vertical)
@@ -39,7 +39,7 @@ for Trial in Trials:
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsP.append(["K_h", Trial[0], "K_p", Trial[1], "Score", score(result), 
                      "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
-                     "Success", success])
+                     "Success", int(success)])
 
 # Sorting results by score
 resultsP = sorted(resultsP, key=lambda x: x[5])
@@ -49,7 +49,7 @@ with open('1D Trial Results P.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11])])
+            row[5]), str(row[7]), str(row[9]), row[11]])
 
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
@@ -100,7 +100,7 @@ for Trial in Trials:
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPI.append(["K_h", Trial[0], "K_p", Trial[1], "K_i", Trial[2], "Score", 
                       score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
-                      "Success", success])
+                      "Success", int(success)])
 
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
 
@@ -108,7 +108,7 @@ with open('1D Trial Results PI.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPI:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), row[13]])
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -160,7 +160,7 @@ for Trial in Trials:
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPID.append(["K_h", Trial[0], "K_p", Trial[1], "K_i", Trial[2], "K_d", Trial[3], 
                        "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", 
-                       Vs[-1][1], "Success", success])
+                       Vs[-1][1], "Success", int(success)])
 
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
 
@@ -168,7 +168,7 @@ with open('1D Trial Results PID.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(
-            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), str(row[15])])
+            row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), row[15]])
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
