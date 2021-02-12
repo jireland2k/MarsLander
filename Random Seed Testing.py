@@ -2,7 +2,7 @@ from MarsLanderPython import *
 #comment out line 103 in MarsLanderPython.py
 
 randomPIDresult = []
-ntest = 10
+ntest = 100
 
 with open('1D Trial Results PID.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
@@ -34,10 +34,9 @@ print()
 
 start_time = time.clock()
 
-np.random.seed(42)  # seed random number generator for reproducible results
-land, landing_site = mars_surface()
-
 for i in range(ntest):
+    global land, landing_site
+    land, landing_site = mars_surface()
     wind = np.random.uniform(-31, 31)
     hoffset = np.random.uniform(-250, 250)
     VXinit = np.random.uniform(-5, 5)
@@ -51,9 +50,9 @@ for i in range(ntest):
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
-    randomPIDresult.append(["wind", wind, "hoffset", hoffset, "V0", V0, "Score", score(result), 
+    randomPIDresult.append(["wind", wind, "hoffset", hoffset, "V0", V0, "Score", score(result, land, landing_site), 
                      "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, 
-                     "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", int(success)])
+                     "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", int(success)]
    
 randomPIDresult = sorted(randomPIDresult, key=lambda x: x[7])
 
@@ -77,6 +76,6 @@ for i in range(testlength):
     succ += int(succdata[i][8])
 print(str(succ) + " successful landings out of " + str(testlength) + " random seeds in PID testing.")
 
-Xz = Xs
-thrustz = thrust
+Xz = [Xs]
+thrustz = [thrust]
 plot_lander(land, landing_site, Xz, thrustz, animate=True, step=10)

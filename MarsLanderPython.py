@@ -100,7 +100,7 @@ def plot_lander(land, landing_site, Xz, thrustz, animate=False, step=10):
         return ax
 
 
-np.random.seed(42)  # seed random number generator for reproducible results
+# np.random.seed(42)  # seed random number generator for reproducible results
 land, landing_site = mars_surface()
 # plot_surface(land, landing_site)
 
@@ -115,7 +115,7 @@ def interpolate_surface(land, x):
 def height(land, X):
     return X[1] - interpolate_surface(land, X[0])
 
-def horizontal_diff(land, X):
+def horizontal_diff(land, landing_site, X):
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     return X[0] - landtarget
 
@@ -152,7 +152,7 @@ def simulate(X0, V0, land, landing_site,
         if autopilot is not None:
             # call user-supplied function to set `rotate` and `power`
             rotate, power, ey, ex = autopilot(
-                i, X, V, fuel, rotate, power, errory, errorx, parameters)
+                i, X, V, fuel, rotate, power, errory, errorx, parameters, land, landing_site)
             assert abs(rotate) <= 45
             assert 0 <= power <= 4
 
@@ -199,9 +199,6 @@ def simulate(X0, V0, land, landing_site,
                 # print(
                 #     "Crash! horizontal speed must be limited (<2m/s in absolute value), got ", abs(V[0]))
                 pass
-            elif abs(horizontal_diff(land, X)) > 100:
-                #print("Crash! Did not land within 100m of target!")
-                pass
             else:
                 # print("Safe landing - Well done!")
                 success = True
@@ -212,7 +209,7 @@ def simulate(X0, V0, land, landing_site,
             thrust[:Nstep, :], fuels[:Nstep], errory[:Nstep], errorx[:Nstep], success)
 
 
-def p_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
+def p_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters, land, landing_site):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
@@ -220,7 +217,7 @@ def p_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     K_px = parameters['K_px']
 
     h = height(land, X)
-    diffx = horizontal_diff(land, X)
+    diffx = horizontal_diff(land, landing_site, X)
 
     ey = - (c + K_h*h + V[1])
     ex = - (c +K_diffx*diffx + V[0])
@@ -241,7 +238,7 @@ def p_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     return (rotate, power, ey, ex)
 
 
-def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
+def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters, land, landing_site):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
@@ -251,7 +248,7 @@ def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     K_ix = parameters['K_ix']
 
     h = height(land, X)
-    diffx = horizontal_diff(land, X)
+    diffx = horizontal_diff(land, landing_site, X)
 
     ey = - (c + K_h*h + V[1])
     ex = - (c +K_diffx*diffx + V[0])
@@ -274,7 +271,7 @@ def pi_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     return (rotate, power, ey, ex)
 
 
-def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
+def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters, land, landing_site):
     c = 0.0  # target landing speed, m/s
     K_h = parameters['K_h']
     K_p = parameters['K_p']
@@ -286,7 +283,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
     K_dx = parameters['K_dx']
 
     h = height(land, X)
-    diffx = horizontal_diff(land, X)
+    diffx = horizontal_diff(land, landing_site, X)
 
     ey = - (c + K_h*h + V[1])
     ex = - (c +K_diffx*diffx + V[0])
@@ -312,7 +309,7 @@ def pid_autopilot(i, X, V, fuel, rotate, power, errory, errorx, parameters):
 
 
 # Automated Testing Score Function
-def score(result):
+def score(result, land, landing_site):
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     fuel_use_bias = 0.00
     position_bias = 0.01
