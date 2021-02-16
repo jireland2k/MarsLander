@@ -49,7 +49,7 @@ for Trial in Trials:
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
-    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result), 
+    resultsP.append(["K_diffx", Trial[0], "K_px", Trial[1], "Score", score(result, land, landing_site), 
                      "Fuel Remaining", fuels[-1], "Distance to Target", hdifffinal, 
                      "Final Velocity", Vs[-1][0], Vs[-1][1], "Success", int(success)])
 
@@ -126,7 +126,7 @@ for Trial in Trials:
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
     resultsPI.append(["K_diffx", Trial[0], "K_px",
-                      Trial[1], "K_ix", Trial[2], "Score", score(result), "Fuel Remaining", 
+                      Trial[1], "K_ix", Trial[2], "Score", score(result, land, landing_site), "Fuel Remaining", 
                       fuels[-1], "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], 
                       Vs[-1][1], "Success", int(success)])
 
@@ -203,7 +203,7 @@ for Trial in Trials:
     landtarget = ((land[landing_site+1, 0] + land[landing_site, 0]) // 2)
     hdifffinal = Xs[-1][0]-landtarget
     resultsPID.append(["K_diffx", Trial[0], "K_px", Trial[1], "K_ix", Trial[2], "K_dx", 
-                       Trial[3], "Score", score(result), "Fuel Remaining", fuels[-1], 
+                       Trial[3], "Score", score(result, land, landing_site), "Fuel Remaining", fuels[-1], 
                        "Distance to Target", hdifffinal, "Final Velocity", Vs[-1][0], Vs[-1][1], 
                        "Success", int(success)])
 

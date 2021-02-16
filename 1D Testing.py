@@ -37,7 +37,7 @@ for Trial in Trials:
 
     # resultsP is for pretty printing
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
-    resultsP.append(["K_h", Trial[0], "K_p", Trial[1], "Score", score(result), 
+    resultsP.append(["K_h", Trial[0], "K_p", Trial[1], "Score", score(result, land, landing_site), 
                      "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
                      "Success", int(success)])
 
@@ -99,7 +99,7 @@ for Trial in Trials:
 
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPI.append(["K_h", Trial[0], "K_p", Trial[1], "K_i", Trial[2], "Score", 
-                      score(result), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
+                      score(result, land, landing_site), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
                       "Success", int(success)])
 
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
@@ -159,7 +159,7 @@ for Trial in Trials:
 
     Xs, Vs, As, thrust, fuels, errory, errorx, success = result
     resultsPID.append(["K_h", Trial[0], "K_p", Trial[1], "K_i", Trial[2], "K_d", Trial[3], 
-                       "Score", score(result), "Fuel remaining", fuels[-1], "Final Velocity", 
+                       "Score", score(result, land, landing_site), "Fuel remaining", fuels[-1], "Final Velocity", 
                        Vs[-1][1], "Success", int(success)])
 
 resultsPID = sorted(resultsPID, key=lambda x: x[9])
