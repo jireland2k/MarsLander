@@ -60,6 +60,8 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = pid_autopilot
+np.random.seed(42)
+land, landing_site = mars_surface()
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 
@@ -186,7 +188,8 @@ if additional_plots == True:
 
     fig2 = plt.figure()
     ax = fig2.add_subplot(111)
-    ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)       
+    ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)
+    fig2.suptitle("Tuning P Autopilot Velocity/Distance Plot")       
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.grid(True)
@@ -213,7 +216,8 @@ if additional_plots == True:
 
     fig3 = plt.figure()
     ax = fig3.add_subplot(111)
-    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)       
+    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)
+    fig3.suptitle("Tuning PI Autopilot Velocity/Distance Plot")     
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.grid(True)
@@ -240,7 +244,8 @@ if additional_plots == True:
 
     fig4 = plt.figure()
     ax = fig4.add_subplot(111)
-    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)       
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)
+    fig4.suptitle("Tuning PID Autopilot Velocity/Distance Plot")            
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.grid(True)
@@ -253,7 +258,8 @@ if additional_plots == True:
     ax = fig5.add_subplot(111)
     ax.scatter(dftP, velP,c='r', marker='.', alpha = 0.1)
     ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)
+    fig5.suptitle("Tuning All Autopilots Velocity/Distance Plot")         
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Velocity at Impact (m/s)")
     ax.grid(True)
@@ -263,7 +269,8 @@ if additional_plots == True:
     ax = fig6.add_subplot(111)
     ax.scatter(dftP, scoreP,c='r', marker='.', alpha = 0.1)
     ax.scatter(dftPI, scorePI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(dftPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(dftPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig6.suptitle("Tuning All Autopilots Score/Distance Plot")        
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Score (less is better)")
     ax.grid(True)
@@ -273,7 +280,8 @@ if additional_plots == True:
     ax = fig7.add_subplot(111)
     ax.scatter(velP, scoreP,c='r', marker='.', alpha = 0.1)
     ax.scatter(velPI, scorePI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(velPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(velPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig7.suptitle("Tuning All Autopilots Score/Velocity Plot")       
     ax.set_xlabel("Velocity at Impact (m/s)")
     ax.set_ylabel("Score (less is better)")
     ax.grid(True)
@@ -283,7 +291,8 @@ if additional_plots == True:
     ax = fig8.add_subplot(111)
     ax.scatter(velP, fuelP, c='r', marker='.', alpha = 0.1)
     ax.scatter(velPI, fuelPI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(velPID, fuelPID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(velPID, fuelPID, c='g', marker='.', alpha = 0.1)
+    fig8.suptitle("Tuning All Autopilots Fuel/Velocity Plot")       
     ax.set_xlabel("Velocity at Impact (m/s)")
     ax.set_ylabel("Fuel used (kg)")
     ax.grid(True)
@@ -293,7 +302,8 @@ if additional_plots == True:
     ax = fig9.add_subplot(111)
     ax.scatter(dftP, fuelP,c='r', marker='.', alpha = 0.1)
     ax.scatter(dftPI, fuelPI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(dftPID, fuelPID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(dftPID, fuelPID, c='g', marker='.', alpha = 0.1)
+    fig9.suptitle("Tuning All Autopilots Fuel/Distance Plot")        
     ax.set_xlabel("Distance from Target (m)")
     ax.set_ylabel("Fuel used (kg)")
     ax.grid(True)
@@ -303,7 +313,161 @@ if additional_plots == True:
     ax = fig10.add_subplot(111)
     ax.scatter(fuelP, scoreP,c='r', marker='.', alpha = 0.1)
     ax.scatter(fuelPI, scorePI, c='orange', marker='.', alpha = 0.2)
-    ax.scatter(fuelPID, scorePID, c='g', marker='.', alpha = 0.1)       
+    ax.scatter(fuelPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig10.suptitle("Tuning All Autopilots Score/Fuel Plot")       
+    ax.set_xlabel("Fuel used (kg)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+
+    #P Random Seed velocity/position plot
+    scoreP = []
+    fuelP = []
+    dftP = []
+    velP = []
+    with open('randomseedP.csv') as csvDataFile:
+        data = list(csv.reader(csvDataFile))
+        
+    for row in data:
+        scoreP.append([float(row[3])])
+        fuelusedP = 500 - float(row[4])
+        fuelP.append([fuelusedP])
+        distance_from_target = float(row[5])
+        dftP.append(distance_from_target)
+        vel1 = float(row[6])
+        vel2 = float(row[7])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velP.append([vel3])
+
+    fig2 = plt.figure()
+    ax = fig2.add_subplot(111)
+    ax.scatter(dftP, velP, c='r', marker='.', alpha = 0.3)
+    fig2.suptitle("Random Seed P Autopilot Velocity/Distance Plot")        
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+
+    #PI Random Seed velocity/position plot
+    scorePI = []
+    fuelPI = []
+    dftPI = []
+    velPI = []
+    with open('randomseedPI.csv') as csvDataFile:
+        data4 = list(csv.reader(csvDataFile))
+        
+    for row in data4:
+        scorePI.append([float(row[3])])
+        fuelusedPI = 500 - float(row[4])
+        fuelPI.append([fuelusedPI])
+        distance_from_target = float(row[5])
+        dftPI.append(distance_from_target)
+        vel1 = float(row[6])
+        vel2 = float(row[7])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velPI.append([vel3])
+
+    fig3 = plt.figure()
+    ax = fig3.add_subplot(111)
+    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.3)
+    fig3.suptitle("Random Seed PI Autopilot Velocity/Distance Plot")        
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+
+    #PID Random Seed velocity/position plot
+    scorePID = []
+    fuelPID = []
+    dftPID = []
+    velPID = []
+    with open('randomseedPID.csv') as csvDataFile:
+        data5 = list(csv.reader(csvDataFile))
+        
+    for row in data5:
+        scorePID.append([float(row[3])])
+        fuelusedPID = 500 - float(row[4])
+        fuelPID.append([fuelusedPID])
+        distance_from_target = float(row[5])
+        dftPID.append(distance_from_target)
+        vel1 = float(row[6])
+        vel2 = float(row[7])
+        vel3 = np.sqrt(vel1**2 + vel2**2)
+        velPID.append([vel3])
+
+    fig4 = plt.figure()
+    ax = fig4.add_subplot(111)
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.3)
+    fig4.suptitle("Random Seed PID Autopilot Velocity/Distance Plot")       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+
+    #all three autopilots superposed
+
+    #vel/dis
+    fig5 = plt.figure()
+    ax = fig5.add_subplot(111)
+    ax.scatter(dftP, velP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, velPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, velPID, c='g', marker='.', alpha = 0.1)
+    fig5.suptitle("Random Seed All Autopilots Velocity/Distance Plot")       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Velocity at Impact (m/s)")
+    ax.grid(True)
+
+    #score/dis
+    fig6 = plt.figure()
+    ax = fig6.add_subplot(111)
+    ax.scatter(dftP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig6.suptitle("Random Seed All Autopilots Score/Distance Plot")       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+    #score/vel
+    fig7 = plt.figure()
+    ax = fig7.add_subplot(111)
+    ax.scatter(velP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(velPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(velPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig7.suptitle("Random Seed All Autopilots Score/Velocity Plot")        
+    ax.set_xlabel("Velocity at Impact (m/s)")
+    ax.set_ylabel("Score (less is better)")
+    ax.grid(True)
+
+    #fuel/vel
+    fig8 = plt.figure()
+    ax = fig8.add_subplot(111)
+    ax.scatter(velP, fuelP, c='r', marker='.', alpha = 0.1)
+    ax.scatter(velPI, fuelPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(velPID, fuelPID, c='g', marker='.', alpha = 0.1)
+    fig8.suptitle("Random Seed All Autopilots Fuel/Velocity Plot")       
+    ax.set_xlabel("Velocity at Impact (m/s)")
+    ax.set_ylabel("Fuel used (kg)")
+    ax.grid(True)
+
+    #fuel/dis
+    fig9 = plt.figure()
+    ax = fig9.add_subplot(111)
+    ax.scatter(dftP, fuelP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(dftPI, fuelPI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(dftPID, fuelPID, c='g', marker='.', alpha = 0.1)
+    fig9.suptitle("Random Seed All Autopilots Fuel/Distance Plot")       
+    ax.set_xlabel("Distance from Target (m)")
+    ax.set_ylabel("Fuel used (kg)")
+    ax.grid(True)
+
+    #score/fuel
+    fig10 = plt.figure()
+    ax = fig10.add_subplot(111)
+    ax.scatter(fuelP, scoreP,c='r', marker='.', alpha = 0.1)
+    ax.scatter(fuelPI, scorePI, c='orange', marker='.', alpha = 0.2)
+    ax.scatter(fuelPID, scorePID, c='g', marker='.', alpha = 0.1)
+    fig10.suptitle("Random Seed All Autopilots Score/Fuel Plot")       
     ax.set_xlabel("Fuel used (kg)")
     ax.set_ylabel("Score (less is better)")
     ax.grid(True)

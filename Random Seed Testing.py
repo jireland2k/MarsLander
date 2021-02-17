@@ -3,7 +3,7 @@ from MarsLanderPython import *
 randomPresult = []
 randomPIresult = []
 randomPIDresult = []
-ntest = 10
+ntest = 1000
 
 
 #P Random Seed Testing
@@ -40,8 +40,8 @@ start_time = time.clock()
 for i in range(ntest):
     land, landing_site = mars_surface()
     wind = np.random.uniform(-31, 31)
-    hoffset = np.random.uniform(-250, 250)
-    VXinit = np.random.uniform(-5, 5)
+    hoffset = np.random.uniform(-500, 500)
+    VXinit = np.random.uniform(-10, 10)
     VYinit = np.random.uniform(-10, -20)
     X0 = [((land[landing_site+1, 0] + land[landing_site, 0]) // 2)+hoffset, 3000]
     V0 = [VXinit, VYinit]
@@ -69,7 +69,6 @@ trial_time = time.clock() - start_time
 
 print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(ntest) + " P autopilot trials.")
-print("\n")
 
 with open('randomseedP.csv') as csvDataFile:
     succdata = list(csv.reader(csvDataFile))
@@ -79,6 +78,7 @@ succ = 0
 for i in range(testlength):
     succ += int(succdata[i][8])
 print(str(succ) + " successful landings out of " + str(testlength) + " random seeds in P testing.")
+print("\n")
 
 Xz = [Xs]
 thrustz = [thrust]
@@ -148,7 +148,7 @@ trial_time = time.clock() - start_time
 
 print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(ntest) + " PI autopilot trials.")
-print("\n")
+
 
 with open('randomseedPI.csv') as csvDataFile:
     succdata = list(csv.reader(csvDataFile))
@@ -158,6 +158,7 @@ succ = 0
 for i in range(testlength):
     succ += int(succdata[i][8])
 print(str(succ) + " successful landings out of " + str(testlength) + " random seeds in PI testing.")
+print("\n")
 
 Xz = [Xs]
 thrustz = [thrust]
@@ -227,7 +228,6 @@ trial_time = time.clock() - start_time
 
 print("It took " + f'{trial_time:.3f}' + " seconds to test " +
       str(ntest) + " PID autopilot trials.")
-print("\n")
 
 with open('randomseedPID.csv') as csvDataFile:
     succdata = list(csv.reader(csvDataFile))
@@ -237,6 +237,7 @@ succ = 0
 for i in range(testlength):
     succ += int(succdata[i][8])
 print(str(succ) + " successful landings out of " + str(testlength) + " random seeds in PID testing.")
+print("\n")
 
 Xz = [Xs]
 thrustz = [thrust]

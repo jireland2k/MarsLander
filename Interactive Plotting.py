@@ -27,7 +27,9 @@ parameters = {'K_h': K_h,
               'K_dx': K_dx,}
 
 best_autopilot = p_autopilot
-Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,  # Increase Nstep for longer simulation
+np.random.seed(42)
+land, landing_site = mars_surface()
+Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 X1=Xs
 thrust1=thrust
