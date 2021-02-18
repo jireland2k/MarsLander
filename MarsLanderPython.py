@@ -76,7 +76,7 @@ def plot_surface(land, landing_site):
 
 
 def plot_lander(land, landing_site, Xz, thrustz, animate=False, step=10):
-    colorz = ["r", "g", "b", "c", "m"]
+    colorz = ["r", "b", "g"]
     poshist = [len(X) for X in Xz]
     plotlen = np.amax(poshist)
     if animate:
@@ -100,7 +100,7 @@ def plot_lander(land, landing_site, Xz, thrustz, animate=False, step=10):
         return ax
 
 
-# np.random.seed(42)  # seed random number generator for reproducible results
+np.random.seed(42)  # seed random number generator for reproducible results
 land, landing_site = mars_surface()
 # plot_surface(land, landing_site)
 
@@ -187,7 +187,7 @@ def simulate(X0, V0, land, landing_site,
             if not (land[landing_site, 0] <= X[0] and X[0] <= land[landing_site + 1, 0]):
                 # print("Crash! did not land on flat ground!")
                 pass
-            elif abs(rotate) > 10:  # Degrees
+            elif abs(rotate) > 20:  # Degrees
                 # print(
                 #     "Crash! did not land in a vertical position (tilt angle < 5 degrees)")
                 pass

@@ -15,7 +15,6 @@ K_dlist = list(np.linspace(a4, b4, c4))
 
 # Automated Testing (P Vertical)
 print("Initialising proportional autopilot testing:")
-print()
 
 start_time = time.clock()
 
@@ -50,6 +49,17 @@ with open('1D Trial Results P.csv', 'w', newline='') as csvfile:
     for row in resultsP:
         writer.writerow([str(row[1]), str(row[3]), str(
             row[5]), str(row[7]), str(row[9]), row[11]])
+
+# Number of Successful Trials
+with open('1D Trial Results P.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][5])
+print(str(succ) + " successful landings out of " + str(testlength) + " in P optimisation.")
+print()
 
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
@@ -101,7 +111,6 @@ for Trial in Trials:
     resultsPI.append(["K_h", Trial[0], "K_p", Trial[1], "K_i", Trial[2], "Score", 
                       score(result, land, landing_site), "Fuel remaining", fuels[-1], "Final Velocity", Vs[-1][1],
                       "Success", int(success)])
-
 resultsPI = sorted(resultsPI, key=lambda x: x[7])
 
 with open('1D Trial Results PI.csv', 'w', newline='') as csvfile:
@@ -109,6 +118,16 @@ with open('1D Trial Results PI.csv', 'w', newline='') as csvfile:
     for row in resultsPI:
         writer.writerow([str(row[1]), str(row[3]), str(
             row[5]), str(row[7]), str(row[9]), str(row[11]), row[13]])
+
+with open('1D Trial Results PI.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][6])
+print(str(succ) + " successful landings out of " + str(testlength) + " in PI optimisation.")
+print()
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -169,6 +188,16 @@ with open('1D Trial Results PID.csv', 'w', newline='') as csvfile:
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(
             row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[13]), row[15]])
+
+with open('1D Trial Results PID.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][7])
+print(str(succ) + " successful landings out of " + str(testlength) + " in PID optimisation.")
+print()
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()

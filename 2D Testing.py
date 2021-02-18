@@ -63,6 +63,17 @@ with open('2D Trial Results P.csv', 'w', newline='') as csvfile:
         writer.writerow([str(row[1]), str(row[3]), str(
             row[5]), str(row[7]), str(row[9]), str(row[11]), str(row[12]), row[14]])
 
+# Number of Successful Trials
+with open('2D Trial Results P.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][7])
+print(str(succ) + " successful landings out of " + str(testlength) + " in P optimisation.")
+print()
+
 # Printing the top 5 results in the interactive window
 print("The top 5 tuning combinations tested for the proportional autopilot are:")
 print()
@@ -118,7 +129,7 @@ for Trial in Trials:
         'K_diffx': Trial[0],
         'K_px': Trial[1],
         'K_ix': Trial[2]
-        }
+    }
     result = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000, print_interval=10000000,
                       autopilot=pi_autopilot, fuel=500, parameters=parameters)
     # add final positions, velocities and fuel load
@@ -137,6 +148,16 @@ with open('2D Trial Results PI.csv', 'w', newline='') as csvfile:
     for row in resultsPI:
         writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
                          str(row[11]), str(row[13]), str(row[14]), row[16]])
+
+with open('2D Trial Results PI.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][8])
+print(str(succ) + " successful landings out of " + str(testlength) + " in PI optimisation.")
+print()
 
 print("The top 5 tuning combinations tested for the PI autopilot are:")
 print()
@@ -171,6 +192,7 @@ K_h = float(data[0][0])
 K_p = float(data[0][1])
 K_i = float(data[0][2])
 K_d = float(data[0][3])
+
 print("Initialising proportional-integral-derivative autopilot testing:")
 print()
 print("The ideal tuning parameters from 1D test used in this test are: K_h: " + 
@@ -215,6 +237,16 @@ with open('2D Trial Results PID.csv', 'w', newline='') as csvfile:
     for row in resultsPID:
         writer.writerow([str(row[1]), str(row[3]), str(row[5]), str(row[7]), str(row[9]), 
                          str(row[11]), str(row[13]), str(row[15]), str(row[16]), row[18]])
+
+with open('2D Trial Results PID.csv') as csvDataFile:
+    succdata = list(csv.reader(csvDataFile))
+
+testlength = len(succdata)
+succ = 0
+for i in range(testlength):
+    succ += int(succdata[i][9])
+print(str(succ) + " successful landings out of " + str(testlength) + " in PID optimisation.")
+print()
 
 print("The top 5 tuning combinations tested for the PID autopilot are:")
 print()
