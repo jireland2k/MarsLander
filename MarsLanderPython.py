@@ -12,7 +12,7 @@ from numpy.linalg import norm
 from ipywidgets import interactive
 from matplotlib import rcParams
 
-from Input import wind, hoffset, VXinit, VYinit, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4
+from Input import wind, hoffset, VXinit, VYinit, a1, b1, c1, a2, b2, c2, a3, b3, c3, a4, b4, c4, ax1, bx1, cx1, ax2, bx2, cx2, ax3, bx3, cx3, ax4, bx4, cx4
 
 rcParams['figure.figsize'] = (10, 8)
 

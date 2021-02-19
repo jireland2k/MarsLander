@@ -1,0 +1,1 @@
+Took the min and max of each param for all autopilots in the top 10 rows, set those as new bounds for search with interval of approx 10 to limit time usage.

@@ -34,21 +34,21 @@ print(str(succ) + " successful parameter combinations out of " + str(testlength)
 
 # Extract best PID test result
 
-with open('1D Trial Results PID.csv') as csvDataFile:
+with open('1D Trial Results P.csv') as csvDataFile:
     data = list(csv.reader(csvDataFile))
 
 K_h = float(data[0][0])
 K_p = float(data[0][1])
-K_i = float(data[0][2])
-K_d = float(data[0][3])
+K_i = 0
+K_d = 0
 
-with open('2D Trial Results PID.csv') as csvDataFile:
+with open('2D Trial Results P.csv') as csvDataFile:
     data2 = list(csv.reader(csvDataFile))
 
 K_diffx = float(data2[0][0])
 K_px = float(data2[0][1])
-K_ix = float(data2[0][2])
-K_dx = float(data2[0][3])
+K_ix = 0
+K_dx = 0
 
 parameters = {'K_h': K_h,
               'K_p': K_p,
@@ -59,9 +59,9 @@ parameters = {'K_h': K_h,
               'K_ix': K_ix,
               'K_dx': K_dx,}
 
-best_autopilot = pid_autopilot
-np.random.seed(42)
-land, landing_site = mars_surface()
+best_autopilot = p_autopilot
+# np.random.seed(42)
+# land, landing_site = mars_surface()
 Xs, Vs, As, thrust, fuels, errory, errorx, success = simulate(X0, V0, land, landing_site, dt=0.1, Nstep=2000,
                                                       autopilot=best_autopilot, fuel=500, parameters=parameters)
 
@@ -84,7 +84,7 @@ Accel_exp = ax2.plot(-h, As[:, 1], 'r-',
 lines = Actual_velocity+Target_velocity+Accel_exp
 labs = [l.get_label() for l in lines]
 ax.legend(lines, labs, loc=0)
-fig.suptitle("Optimal PID Autopilot Flight Data")
+fig.suptitle("Optimal P Autopilot Flight Data")
 ax.set_xlabel("-Altitude (m)")
 ax.set_ylabel("Vertical velocity (m/s)")
 ax2.set_ylabel("Vertical acceleration (m/s^2)")
@@ -164,7 +164,7 @@ ax8.set_ylim(-3, +3)
 ax7.grid(True)
 
 
-additional_plots = True
+additional_plots = False
 if additional_plots == True:
 
     #P trials velocity/position plot
