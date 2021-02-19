@@ -164,7 +164,7 @@ ax8.set_ylim(-3, +3)
 ax7.grid(True)
 
 
-additional_plots = False
+additional_plots = True
 if additional_plots == True:
 
     #P trials velocity/position plot
@@ -172,7 +172,7 @@ if additional_plots == True:
     fuelP = []
     dftP = []
     velP = []
-    with open('2D Trial Results P.csv') as csvDataFile:
+    with open('2D Trial Results P Successful.csv') as csvDataFile:
         data3 = list(csv.reader(csvDataFile))
         
     for row in data3:
@@ -200,7 +200,7 @@ if additional_plots == True:
     fuelPI = []
     dftPI = []
     velPI = []
-    with open('2D Trial Results PI.csv') as csvDataFile:
+    with open('2D Trial Results PI Successful.csv') as csvDataFile:
         data4 = list(csv.reader(csvDataFile))
         
     for row in data4:
@@ -228,7 +228,7 @@ if additional_plots == True:
     fuelPID = []
     dftPID = []
     velPID = []
-    with open('2D Trial Results PID.csv') as csvDataFile:
+    with open('2D Trial Results PID Successful.csv') as csvDataFile:
         data5 = list(csv.reader(csvDataFile))
         
     for row in data5:
@@ -325,7 +325,7 @@ if additional_plots == True:
     fuelP = []
     dftP = []
     velP = []
-    with open('randomseedP.csv') as csvDataFile:
+    with open('randomseedP Successful.csv') as csvDataFile:
         data = list(csv.reader(csvDataFile))
         
     for row in data:
@@ -353,7 +353,7 @@ if additional_plots == True:
     fuelPI = []
     dftPI = []
     velPI = []
-    with open('randomseedPI.csv') as csvDataFile:
+    with open('randomseedPI Successful.csv') as csvDataFile:
         data4 = list(csv.reader(csvDataFile))
         
     for row in data4:
@@ -381,7 +381,7 @@ if additional_plots == True:
     fuelPID = []
     dftPID = []
     velPID = []
-    with open('randomseedPID.csv') as csvDataFile:
+    with open('randomseedPID Successful.csv') as csvDataFile:
         data5 = list(csv.reader(csvDataFile))
         
     for row in data5:
